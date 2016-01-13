@@ -1,0 +1,119 @@
+---
+title: "Parenting Project - Database exploration"
+author: "Mike"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+  toc: true
+number_sections: true
+---
+  
+TODO:
+
+* geoip?
+* newer participants zero out indicators prior to initiation
+* check distribution of answers vs. tries
+* filter to first try or last try? 
+  
+#  Preliminary database loading
+
+```{r echo=FALSE}
+rm(list=ls())
+knitr::opts_chunk$set(fig.width=8, fig.height=5, 
+                      echo=TRUE, warning=FALSE, message=FALSE, cache=FALSE)
+suppressPackageStartupMessages(c("dplyr","langcog","tidyr","ggplot2","lme4"))
+library(langcog)
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(tidyr)
+library(lubridate)
+library(directlabels)
+theme_set(theme_bw())
+```
+
+# Initial connection and baby info
+
+Connect to database.
+
+```{r echo=FALSE}
+pwd <- read.table("pwd.txt", stringsAsFactors = FALSE)
+kinedu <- src_mysql(host = "db.kinedu.com", 
+                 dbname = "kinedu_app", 
+                 user = "reader", password = pwd$V1[1])
+```
+
+Get baby info.
+
+```{r}
+babies <- tbl(kinedu, "babies")
+
+baby_info <- babies %>% 
+  select(id, birthday, gender) %>%
+  collect %>%
+  mutate(baby_id = id, 
+         dob = ymd(birthday)) %>%
+  select(-birthday, -id)
+```
+
+# Indicators
+
+## Extract assessments/indicators and join
+
+Get indicators data.
+
+```{r}
+indicator_cats <- tbl(kinedu, "indicator_categories") %>%
+  mutate(indicator_category_id = id) %>%
+  collect %>%
+  data.frame
+
+indicator_cats$name <- sapply(indicator_cats$name, 
+                                function(x) {str_split(x, ",")[[1]][1]})
+indicator_cats$cat_name <- str_sub(sapply(indicator_cats$name, 
+                                function(x) {str_split(x, ":")[[1]][2]}), 
+                              start = 2, end = -2)
+
+indicator_cats <- indicator_cats %>% 
+  select(indicator_category_id, cat_name)
+  
+indicator_info <- tbl(kinedu, "indicators") %>%
+  mutate(indicator_id = id) %>%
+  select(indicator_id, description, indicator_category_id) %>%
+  collect %>% 
+  data.frame %>%
+  left_join(indicator_cats)
+
+indicators <- tbl(kinedu, "indicator_answers") 
+```
+
+Explore indicator answers. Use raw SQL to get a limited number of these for exploration. 
+
+```{r}
+indicators_local <- tbl(kinedu, 
+                        sql("SELECT indicator_id, tried_count, baby_id, answer, created_at FROM indicator_answers LIMIT 100000")) %>%
+  collect
+```
+
+What's the tried count and answer mean? 
+
+```{r}
+indicators_local %>%
+  group_by(tried_count) %>%
+  summarise(answer = mean(answer, na.rm=TRUE),
+            prop.na = mean(is.na(answer)),
+            n = n())
+```
+
+Merge in baby info. 
+
+```{r}
+d <- left_join(indicators_local, baby_info) %>%
+  mutate(indicator_date = ymd_hms(created_at)) %>%
+  filter(!is.na(gender)) %>%
+  mutate(age = floor(difftime(indicator_date, dob, units = "weeks"))) %>%
+  filter(tried_count == 0) %>%
+  group_by(indicator_id, age) %>%
+  summarise(answer = mean(answer))
+```
+
