@@ -6,6 +6,7 @@ output:
   html_document:
   toc: true
 number_sections: true
+runtime: shiny
 ---
   
 TODO:
@@ -21,10 +22,9 @@ TODO:
 rm(list=ls())
 knitr::opts_chunk$set(fig.width=8, fig.height=5, 
                       echo=TRUE, warning=FALSE, message=FALSE, cache=FALSE)
-suppressPackageStartupMessages(c("dplyr","langcog","tidyr","ggplot2","lme4"))
-library(langcog)
-library(dplyr)
-library(ggplot2)
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(langcog))
 library(stringr)
 library(tidyr)
 library(lubridate)
@@ -46,9 +46,7 @@ kinedu <- src_mysql(host = "db.kinedu.com",
 Get baby info.
 
 ```{r}
-babies <- tbl(kinedu, "babies")
-
-baby_info <- babies %>% 
+baby_info <- tbl(kinedu, "babies") %>% 
   select(id, birthday, gender) %>%
   collect %>%
   mutate(baby_id = id, 
@@ -58,7 +56,7 @@ baby_info <- babies %>%
 
 # Indicators
 
-## Extract assessments/indicators and join
+## Extract indicator info
 
 Get indicators data.
 
@@ -87,6 +85,19 @@ indicator_info <- tbl(kinedu, "indicators") %>%
 indicators <- tbl(kinedu, "indicator_answers") 
 ```
 
+Get short descriptions.
+
+```{r}
+indicator_info$eng_desc <- sapply(indicator_info$description, 
+                                function(x) {str_split(x, ",")[[1]][1]})
+indicator_info$eng_desc <- str_sub(sapply(indicator_info$eng_desc, 
+                                function(x) {str_split(x, ":")[[1]][2]}), 
+                              start = 2, end = -2)
+indicator_info$short_desc <- str_sub(indicator_info$eng_desc, start = 1, end = 20)
+```
+
+## Pull indicators
+
 Explore indicator answers. Use raw SQL to get a limited number of these for exploration. 
 
 ```{r}
@@ -111,9 +122,48 @@ Merge in baby info.
 d <- left_join(indicators_local, baby_info) %>%
   mutate(indicator_date = ymd_hms(created_at)) %>%
   filter(!is.na(gender)) %>%
-  mutate(age = floor(difftime(indicator_date, dob, units = "weeks"))) %>%
-  filter(tried_count == 0) %>%
-  group_by(indicator_id, age) %>%
-  summarise(answer = mean(answer))
+  mutate(age_months = floor(as.numeric(difftime(indicator_date, 
+                                         dob, units = "days"))/30.3)) %>%
+  filter(tried_count == 0, age_months > 0, age_months < 24) 
 ```
 
+Now get the most frequent of these, and use these to filter out the curves we want to plot. 
+
+```{r}
+freq_indicators <- d %>%
+  group_by(indicator_id) %>%
+  summarise(n = n()) %>%
+  filter(n > quantile(n, .70))
+  
+ms <- d %>%
+  filter(indicator_id %in% freq_indicators$indicator_id) %>%
+  group_by(indicator_id, age_months) %>%
+  summarise(answer = mean(answer)) %>%
+  left_join(indicator_info) 
+```
+
+Plot.
+
+```{r}
+library(shiny)
+shinyApp(
+  ui = fluidPage(
+    selectInput("cat_name", "Category:", 
+                choices = unique(ms$cat_name)),
+    plotOutput("catplot")
+  ),
+  
+  server = function(input, output) {
+    output$catplot <- renderPlot({
+      ggplot(filter(ms,cat_name == input$cat_name),
+             aes(x = age_months, y = answer, col = eng_desc)) + 
+        geom_point() + 
+        geom_smooth(se=FALSE) + 
+        scale_colour_solarized() + 
+        ylim(c(0,1))
+    })
+  },
+  
+  options = list(height = 700)
+)
+```
