@@ -18,6 +18,7 @@ suppressPackageStartupMessages(library(langcog))
 library(stringr)
 library(tidyr)
 library(ggrepel)
+library(shiny)
 theme_set(theme_bw())
 
 load("kinedu_all_processed_3-11-16.RData")
@@ -54,7 +55,6 @@ Multi-panel.
 
 ```{r}
 plot_data <- filter(ms, cat_name %in% c("cognitive","crawl","smile","walk"))
-
 
 label_data <- plot_data %>% 
   group_by(cat_name, eng_desc) %>% 
@@ -118,7 +118,6 @@ shinyApp(
 Interactive by category.
 
 ```{r, cache=FALSE}
-library(shiny)
 shinyApp(
   ui = fluidPage(
     selectInput("cat_name", "Category:", 
