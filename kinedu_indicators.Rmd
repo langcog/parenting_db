@@ -38,7 +38,7 @@ Connect to database.
 
 ```{r echo=FALSE}
 pwd <- read.table("pwd.txt", stringsAsFactors = FALSE)
-kinedu <- src_mysql(host = "db.kinedu.com", 
+kinedu <- src_mysql(host = "db-slave.kinedu.com", 
                  dbname = "kinedu_app", 
                  user = "reader", password = pwd$V1[1])
 ```
@@ -81,8 +81,6 @@ indicator_info <- tbl(kinedu, "indicators") %>%
   collect %>% 
   data.frame %>%
   left_join(indicator_cats)
-
-indicators <- tbl(kinedu, "indicator_answers") 
 ```
 
 Get short descriptions.
@@ -100,23 +98,23 @@ indicator_info$short_desc <- str_sub(indicator_info$eng_desc, start = 1, end = 2
 
 Explore indicator answers. Use raw SQL to get a limited number of these for exploration. 
 
+From Guillermo:
+
+> `SELECT SUM(tried_count + 1), indicator_id, MAX(answer) as max_answer FROM indicator_answers GROUP BY indicator_id HAVING max_answer = 1;`
+
+add `LIMIT 1000000` to get only the first million.
+
 ```{r}
+indicators <- tbl(kinedu, "indicator_answers") 
+
 indicators_local <- tbl(kinedu, 
-                        sql("SELECT indicator_id, tried_count, baby_id, answer, created_at FROM indicator_answers LIMIT 100000")) %>%
+                        sql("SELECT indicator_id, tried_count, baby_id, answer, created_at FROM indicator_answers")) %>%
   collect
 ```
 
-What's the tried count and answer mean? 
-
-```{r}
-indicators_local %>%
-  group_by(tried_count) %>%
-  summarise(answer = mean(answer, na.rm=TRUE),
-            prop.na = mean(is.na(answer)),
-            n = n())
-```
-
 Merge in baby info. 
+
+Take only questions that have been tried once. 
 
 ```{r}
 d <- left_join(indicators_local, baby_info) %>%
@@ -127,43 +125,29 @@ d <- left_join(indicators_local, baby_info) %>%
   filter(tried_count == 0, age_months > 0, age_months < 24) 
 ```
 
+Save to an RData file for quick loading later. 
+
+```{r}
+save(file = "kinedu_all_3-11-16.RData", list = c("indicator_info","d"))
+```
+
 Now get the most frequent of these, and use these to filter out the curves we want to plot. 
 
 ```{r}
 freq_indicators <- d %>%
   group_by(indicator_id) %>%
-  summarise(n = n()) %>%
-  filter(n > quantile(n, .70))
-  
+  summarise(n = n()) 
+
 ms <- d %>%
   filter(indicator_id %in% freq_indicators$indicator_id) %>%
   group_by(indicator_id, age_months) %>%
-  summarise(answer = mean(answer)) %>%
-  left_join(indicator_info) 
+  summarise(answer = mean(answer), 
+            n = n()) %>%
+  left_join(indicator_info)
 ```
 
-Plot.
+Now resave. 
 
 ```{r}
-library(shiny)
-shinyApp(
-  ui = fluidPage(
-    selectInput("cat_name", "Category:", 
-                choices = unique(ms$cat_name)),
-    plotOutput("catplot")
-  ),
-  
-  server = function(input, output) {
-    output$catplot <- renderPlot({
-      ggplot(filter(ms,cat_name == input$cat_name),
-             aes(x = age_months, y = answer, col = eng_desc)) + 
-        geom_point() + 
-        geom_smooth(se=FALSE) + 
-        scale_colour_solarized() + 
-        ylim(c(0,1))
-    })
-  },
-  
-  options = list(height = 700)
-)
+save(file = "kinedu_all_processed_3-11-16.RData", list = c("ms"))
 ```

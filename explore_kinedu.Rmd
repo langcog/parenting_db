@@ -17,64 +17,68 @@ suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library(langcog))
 library(stringr)
 library(tidyr)
-library(lubridate)
+library(ggrepel)
 theme_set(theme_bw())
 
-load("kinedu_1M_3-10-16.Rdata")
-```
-
-Now get the most frequent of these, and use these to filter out the curves we want to plot. 
-
-```{r}
-freq_indicators <- d %>%
-  group_by(indicator_id) %>%
-  summarise(n = n()) 
-# %>%
-  # filter(n > quantile(n, .80))
-
-ms <- d %>%
-  filter(indicator_id %in% freq_indicators$indicator_id) %>%
-  group_by(indicator_id, age_months) %>%
-  summarise(answer = mean(answer), 
-            n = n()) %>%
-  left_join(indicator_info) %>% 
-  filter(n > 3)
+load("kinedu_all_processed_3-11-16.RData")
 ```
 
 One panel. 
 
 ```{r}
 target_cat <- "touch"
+plot_data <- filter(ms, cat_name == target_cat)
 
-ggplot(filter(ms, cat_name == target_cat),
+label_data <- plot_data %>% 
+  group_by(eng_desc) %>% 
+  summarise(answer = median(answer), 
+            age_months = median(age_months))
+
+ggplot(plot_data,
        aes(x = age_months, y = answer, col = eng_desc)) + 
-  geom_point() + 
-  geom_smooth(se=FALSE, method="lm", formula = y ~ log(x)) + 
-  scale_colour_solarized(guide=FALSE) + 
-  facet_wrap(~cat_name) + 
+  geom_jitter(aes(size = n), width = .3, height = 0) + 
+  geom_smooth(se=FALSE, aes(weight = n), method="loess") + 
+  scale_colour_solarized(guide=FALSE) +
+  scale_fill_solarized(guide=FALSE) +
   ylim(c(0,1)) + 
-  ggrepel::geom_text_repel(data = filter(ms, cat_name == target_cat) %>% 
-                             group_by(eng_desc) %>% 
-                             filter(age_months == min(age_months)),
-                           aes(label = eng_desc, hjust = 1))
+  xlim(c(0,24)) + 
+  geom_label_repel(data = label_data, aes(fill = eng_desc, 
+                                          label = eng_desc), 
+                   force = 4, size = 3,
+                   color = 'white',
+                   box.padding = unit(0.25, "lines"),
+                   point.padding = unit(0.5, "lines"))
 ```
 
 Multi-panel.
 
 ```{r}
-ggplot(filter(ms, !is.na(cat_name), 
-              cat_name %in% c("cognitive","crawl","smile","walk")),
+plot_data <- filter(ms, cat_name %in% c("cognitive","crawl","smile","walk"))
+
+
+label_data <- plot_data %>% 
+  group_by(cat_name, eng_desc) %>% 
+  summarise(answer = median(answer), 
+            age_months = median(age_months))
+
+ggplot(plot_data,
        aes(x = age_months, y = answer, col = eng_desc)) + 
-  geom_point() + 
-  geom_smooth(se=FALSE, span=4) + 
-  scale_colour_solarized(guide=FALSE) + 
+  geom_jitter(aes(size = n), width = .3, height = 0) + 
   facet_wrap(~cat_name) + 
+  geom_smooth(se=FALSE, aes(weight = n), method="loess") + 
+  scale_colour_solarized(guide=FALSE) + 
+  scale_fill_solarized(guide=FALSE) + 
   ylim(c(0,1)) + 
-  geom_text(data = filter(ms, !is.na(cat_name), 
-              cat_name %in% c("cognitive","crawl","smile","walk")) %>% 
-              group_by(eng_desc) %>% 
-              filter(age_months == min(age_months)),
-            aes(label = eng_desc, hjust= 0), nudge_y = -.25)
+  xlim(c(0,24)) + 
+#   geom_label(data = label_data, aes(fill = eng_desc, 
+#                                     label = eng_desc), 
+#              col = "white") 
+  geom_label_repel(data = label_data, aes(fill = eng_desc, 
+                                          label = eng_desc), 
+                   force = 8, size = 2,
+                   color = 'white',
+                   box.padding = unit(0.25, "lines"),
+                   point.padding = unit(0.5, "lines"))
 ```
 
 Interactive by description. 
@@ -93,7 +97,7 @@ shinyApp(
   server = function(input, output) {
     output$descplot <- renderPlot({
       ggplot(filter(ms, eng_desc %in% input$eng_descs),
-             aes(x = age_months, y = answer, col = eng_desc)) + 
+             aes(x = age_months, y = answer, col = eng_desc, size = n)) + 
         geom_point() + 
         geom_smooth(se=FALSE, span=4) + 
         scale_colour_solarized(guide=FALSE) + 
