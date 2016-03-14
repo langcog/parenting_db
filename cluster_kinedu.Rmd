@@ -1,0 +1,313 @@
+---
+title: "Developmental milestone curves from parent report data"
+author: "Mike & Emily"
+date: "`r Sys.Date()`"
+output: 
+html_document:
+  toc: true
+  number_sections: true
+---
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(fig.width=8, fig.height=5, 
+                      echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE)
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(langcog))
+library(stringr)
+library(tidyr)
+library(ggrepel)
+library(binom)
+library(corrplot)
+theme_set(theme_bw())
+```
+
+# Introduction
+
+We are again analyzing data from Kinedu, an app for parents of young children to do activities with their children. 
+
+```{r}
+load("kinedu_all_processed_3-11-16.RData")
+ms <- filter(ms, 
+             !is.na(cat_name), 
+             !is.na(eng_desc)) 
+ms$eng_desc <- gsub("[^A-Za-z0-9/ ]|-","",ms$eng_desc)
+```
+
+The particular data we look at here are a set of `r sum(ms$n)` binary answers given the first time parents saw a set of `r length(unique(ms$eng_desc))` "indicators" - questions that the app asked to help with developmental categorization. 
+
+## Approach and goals
+
+Our goal in this report is to understand the clustering of developmental milestones. In particular, there are several kinds of analyses that we'd like to look at.
+
+* *Clustering of milestones*. Find milestones that follow the same general trajectory across ages, e.g. things that are generally happening at the same time. Some of these will be within milestone categories, others (perhaps the more interesting ones) between categories. 
+
+* *Clustering of individuals*. We don't know enough about individuals actually to cluster them (for the most part), but we can look at the predictive relationships between particular answers (controlling for age), e.g. people who answer this question affirmatively are also more likely to answer this other one affirmatively. This approach is likely quite confounded by response biases, so we'd need to model that as well. 
+
+* *Dimensionality reduction*. Identify the principal components of variance in responding across questions. A lot of this will likely be age-related, but perhaps there are other secondary components that are interesting. 
+
+## Remarks on data
+
+One thing to look at here is the data we have. 
+
+```{r, fig.height=8}
+indicator_mat <- ms %>%
+  ungroup() %>%
+  select(age_months, eng_desc, answer, n) 
+
+ggplot(indicator_mat, aes(x = age_months, y = eng_desc, fill = answer)) + 
+  geom_tile()
+```
+
+Missing data is clearly a huge problem, as is sample size in each cell, as can be seen by looking at the same matrix, this time excluding cells with fewer than 20 entries.   
+
+```{r, fig.height=8}
+ggplot(filter(indicator_mat, n > 20), 
+       aes(x = age_months, y = eng_desc, fill = answer)) + 
+  geom_tile()
+```
+
+So at a certain point we will need to do some significant interpolation of missing values, probably using a model. Otherwise, our missing data problem (as well as the sparse cells at the younger and older ages) will cause a lot of spurious findings. 
+
+# Interpolation of means across ages
+
+We follow the approach of fitting curves independently and using them to interpolate missing data. Let's plot some empirical curves first. Red is weighted loess; blue is weighted polynomial logistic. I experimented with degrees up to 4 but found that 3 worked acceptably. 
+
+```{r}
+samples <- unique(ms$indicator_id)[1:42]
+
+ggplot(filter(ms, indicator_id %in% samples), 
+       aes(x = age_months, y = answer, size = n)) + 
+  geom_point() + 
+  facet_wrap(~indicator_id) + 
+  scale_size_continuous(guide=FALSE) + 
+  geom_smooth(method = "loess", se=FALSE, 
+              aes(weight = n), col = "red") + 
+  geom_smooth(method = "glm", se=FALSE, 
+              aes(family = "binomial", weight = n), 
+              formula = y ~ poly(x,3), 
+              col = "blue") + 
+  ylim(c(0,1))
+```
+
+But honestly, loess looks beter overall. So let's get interpolated curve fits for loess. For one indicator. 
+
+```{r}
+sample_data <- filter(ms, indicator_id ==1)
+mod <- loess(answer ~ age_months, 
+             weights = n, 
+             surface = "direct", # necessary for going outside range of data
+             data = sample_data)
+sample_data$preds <- predict(mod)
+
+qplot(age_months, answer, size = n, data= sample_data) + 
+  geom_line(aes(y = preds, size = 1), col = "red")
+```
+
+Now do this for every indicator
+
+```{r}
+ms_interp <- ms %>%
+  group_by(indicator_id, eng_desc, cat_name) %>%
+  do(data.frame(age_months = 1:23, 
+                preds = predict(loess(answer ~ age_months, 
+                                      weights = n, 
+                                      surface = "direct",
+                                      data = .), 
+                                newdata = data.frame(age_months = 1:23))))
+```
+
+# Clustering of age trajectories
+
+We look at these clusters first for raw data and then for interpolated. 
+
+## Raw data
+
+Let's follow the approach of computing correlations between average trajectories. 
+
+```{r}
+mat <- ms %>%
+  ungroup() %>%
+  select(age_months, indicator_id, answer, n) %>%
+  select(-n) %>%
+  spread(indicator_id, answer) %>%
+  select(-age_months)
+
+cor_mat <- cor(mat, use="pairwise.complete.obs")
+```
+
+Look at the distribution of correlations, both within and across categories.
+
+```{r}
+info <- ms %>%
+  group_by(eng_desc) %>%
+  summarise(indicator_id = indicator_id[1], 
+            cat_name = cat_name[1])
+
+cors <- cor_mat %>%
+  data.frame %>%
+  mutate(indicator_id = as.numeric(rownames(cor_mat))) %>%
+  gather(target_id, cor, -indicator_id) %>%
+  left_join(info) %>%
+  mutate(target_id = as.numeric(str_replace(target_id, "X", ""))) %>%
+  rename(base_id = indicator_id, 
+         base_desc = eng_desc, 
+         base_cat = cat_name, 
+         indicator_id = target_id) %>%
+  left_join(info) %>%
+  rename(target_id = indicator_id, 
+         target_cat = cat_name, 
+         target_desc = eng_desc) %>%
+  mutate(same_cat = target_cat == base_cat)
+         
+
+qplot(cor, fill = same_cat, facets = ~base_cat, data=cors) + 
+  geom_vline(xintercept = 0, lty = 2, col = "red") + 
+  scale_fill_solarized() + 
+  xlim(c(-1,1))
+```
+
+This is interesting, but clearly too much information. Need to summarize for greater ease of reading. 
+
+```{r}
+ms_cor <- cors %>%
+  group_by(same_cat, base_cat) %>%
+  summarise(cor = mean(cor)) %>%
+  ungroup() 
+
+same_cats <- ms_cor$base_cat[ms_cor$same_cat]
+same_cors <- ms_cor$cor[ms_cor$same_cat]
+ms_cor$base_cat <- factor(ms_cor$base_cat, 
+                          levels = same_cats[sort(same_cors,
+                                                  decreasing=FALSE, 
+                                                  index.return=TRUE)$ix])
+
+ggplot(ms_cor, aes(x = base_cat, y = cor, col = same_cat)) + 
+  geom_point() + 
+  scale_color_solarized() +
+  coord_flip()
+```
+
+From this plot it's clear that within-category correlations are substantially higher than between-cateogry correlations. 
+
+## Curve interpolated data
+
+```{r}
+mat <- ms_interp %>%
+  ungroup() %>%
+  select(age_months, indicator_id, preds) %>%
+  spread(indicator_id, preds) %>%
+  select(-age_months)
+
+cor_mat <- cor(mat, use="pairwise.complete.obs")
+
+cors <- cor_mat %>%
+  data.frame %>%
+  mutate(indicator_id = as.numeric(rownames(cor_mat))) %>%
+  gather(target_id, cor, -indicator_id) %>%
+  left_join(info) %>%
+  mutate(target_id = as.numeric(str_replace(target_id, "X", ""))) %>%
+  rename(base_id = indicator_id, 
+         base_desc = eng_desc, 
+         base_cat = cat_name, 
+         indicator_id = target_id) %>%
+  left_join(info) %>%
+  rename(target_id = indicator_id, 
+         target_cat = cat_name, 
+         target_desc = eng_desc) %>%
+  mutate(same_cat = target_cat == base_cat)
+         
+ms_cor <- cors %>%
+  group_by(same_cat, base_cat) %>%
+  summarise(cor = mean(cor)) %>%
+  ungroup() 
+
+same_cats <- ms_cor$base_cat[ms_cor$same_cat]
+same_cors <- ms_cor$cor[ms_cor$same_cat]
+ms_cor$base_cat <- factor(ms_cor$base_cat, 
+                          levels = same_cats[sort(same_cors,
+                                                  decreasing=FALSE, 
+                                                  index.return=TRUE)$ix])
+
+ggplot(ms_cor, aes(x = base_cat, y = cor, col = same_cat)) + 
+  geom_point() + 
+  scale_color_solarized() +
+  coord_flip()
+```
+
+The interpolated data is cleaner but the ordering is (comfortingly) not that different. 
+
+## Individual cross-category matches
+
+What are some of the best-matching curves across categories? 
+
+```{r}
+qplot(cor, data = cors, fill = same_cat) + 
+  scale_fill_solarized()
+```
+
+There are clearly some trajectories that are almost perfectly correlated across categories. Let's get some of these pairs.
+
+```{r}
+strong_cors <- filter(cors, cor > .95, same_cat == FALSE) %>%
+  arrange(desc(cor))
+head(strong_cors, 10)
+```
+
+and plot. 
+
+```{r}
+sample_data <- filter(ms, indicator_id %in% c(47, 108, 219, 119))
+
+qplot(age_months, answer, size = n, data= sample_data) + 
+  facet_wrap(~eng_desc)
+```
+
+So it's clear a lot of these things are correlated just because they are going up... 
+
+# Hierarchical clustering. 
+
+A next step is to try and cluster by correlations. Note here we're still working with the interpolated data. 
+
+```{r}
+ds <- dist(t(mat))
+hc <- hclust(ds)
+```
+
+```{r}
+library(ggdendro)
+dhc <- as.dendrogram(hc)
+# Rectangular lines
+ddata <- dendro_data(dhc, type = "rectangle")
+sddata <- segment(ddata)
+```
+
+```{r}
+info <-  ms %>%
+  group_by(eng_desc) %>%
+  summarise(indicator_id = indicator_id[1], 
+            cat_name = cat_name[1]) %>%
+  rename(label = indicator_id) %>%
+  left_join(ddata$labels %>% mutate(label = as.numeric(as.character(label))))
+
+sddata <- sddata %>%
+  rowwise() %>%
+  mutate(leaf = yend == 0, 
+         category = ifelse(leaf, info$cat_name[info$x == round(x)], "non_leaf"))
+
+```
+
+```{r}
+ggplot(sddata[c(-1,-2,-3,-4),]) + 
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend, col = category)) + 
+  coord_flip() + 
+  scale_y_reverse(expand = c(0.2, 0)) + 
+  theme_dendro()
+```
+
+Here's the correlation matrix arranged by that hierarchical clustering output. 
+
+```{r}
+mat_scaled <- scale(mat,center=TRUE,scale=TRUE);
+corrplot(cor_mat, order = "hclust")
+```
