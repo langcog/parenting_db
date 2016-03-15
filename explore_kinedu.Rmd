@@ -6,7 +6,6 @@ output:
 html_document:
   toc: true
   number_sections: true
-  runtime: shiny
 runtime: shiny
 ---
 
@@ -23,31 +22,6 @@ library(binom)
 theme_set(theme_bw())
 ```
 
-# Introduction
-
-We are analyzing data from Kinedu, an app for parents of young children to do activities with their children. 
-
-```{r}
-load("kinedu_all_processed_3-11-16.RData")
-ms <- filter(ms, 
-             !is.na(cat_name), 
-             !is.na(eng_desc)) 
-ms$eng_desc <- gsub("[^A-Za-z0-9/ ]|-","",ms$eng_desc)
-```
-
-The particular data we look at here are a set of `r sum(ms$n)` binary answers given the first time parents saw a set of `r length(unique(ms$eng_desc))` "indicators" - questions that the app asked to help with developmental categorization. 
-
-Some (random) example indicators:
-
-+ "`r unique(ms$eng_desc)[20]`," in the category "`r ms$cat_name[ms$eng_desc == unique(ms$eng_desc)[20]][1]`"
-+ "`r unique(ms$eng_desc)[40]`," in the category "`r ms$cat_name[ms$eng_desc == unique(ms$eng_desc)[40]][1]`"
-+ "`r unique(ms$eng_desc)[60]`," in the category "`r ms$cat_name[ms$eng_desc == unique(ms$eng_desc)[60]][1]`"
-
-We're going to look first at their developmental curves, and eventually perhaps at their relationship to one another. 
-
-# Major milestones
-
-
 ```{r, echo=FALSE}
 solarized_colors <- c("#268bd2", "#cb4b16", "#859900", "#993399", "#d33682",
                       "#b58900", "#2aa198", "#6c71c4", "#dc322f")
@@ -57,6 +31,32 @@ stable_order_palete <- function(num_values) {
     solarized_colors[1:(num_values %% length(solarized_colors))])
 }
 ```
+
+# Introduction
+
+We are analyzing data from Kinedu, an app for parents of young children to do activities with their children. 
+
+```{r}
+load("kinedu_all_processed_3-11-16.RData")
+info <- read.csv("info.csv") %>%
+  filter(!duplicated(name))
+
+ms <- right_join(ms, info) %>% # remove duplicated indicators
+  select(indicator_id, age_months, answer, n, general_category, 
+         specific_category, name) 
+```
+
+The particular data we look at here are a set of `r prettyNum(sum(ms$n), big.mark=",", scientific=FALSE)` binary answers given the first time parents saw a set of `r length(unique(ms$name))` "indicators" - questions that the app asked to help with developmental categorization. 
+
+Some (random) example indicators:
+
++ "`r unique(ms$name)[20]`," in the category "`r ms$specific_category[ms$name == unique(ms$name)[20]][1]`"
++ "`r unique(ms$name)[40]`," in the category "`r ms$specific_category[ms$name == unique(ms$name)[40]][1]`"
++ "`r unique(ms$name)[60]`," in the category "`r ms$specific_category[ms$name == unique(ms$name)[60]][1]`"
+
+This report uses an (in-progress) manual categorization of markers to examine their developmental curves, both individually and in aggregate.
+
+# Major milestones
 
 Here is a set of major milestones of interest. 
 
@@ -68,9 +68,9 @@ selected_descs <- c("Begins to walk alone",
                     "Switches objects from one hand to the other")
 
 plot_data <- filter(ms, 
-                    eng_desc %in% selected_descs) %>%
+                    name %in% selected_descs) %>%
   filter(n > 50) %>%
-  mutate(eng_desc = factor(eng_desc, levels = selected_descs), 
+  mutate(name = factor(name, levels = selected_descs), 
          age_years = age_months / 12, 
          ci.low = binom::binom.confint(x = answer * n, n = n, 
                                        methods = "bayes")$lower,
@@ -78,12 +78,12 @@ plot_data <- filter(ms,
                                         methods = "bayes")$upper)
 
 label_data <- plot_data %>% 
-  group_by(cat_name, eng_desc) %>% 
+  group_by(name) %>% 
   summarise(answer = median(answer), 
             age_years = median(age_years))
 
 ggplot(plot_data,
-       aes(x = age_years, y = answer, col = eng_desc)) + 
+       aes(x = age_years, y = answer, col = name)) + 
   geom_point(aes(size = n)) + 
   geom_linerange(aes(ymin = ci.low, ymax = ci.high)) + 
   # geom_smooth(se=FALSE, aes(weight = n), method = "loess") + 
@@ -97,8 +97,8 @@ ggplot(plot_data,
   xlim(c(0,2)) +
   xlab("Age (years)") + 
   ylab("Proportion parents responding yes") + 
-  geom_label_repel(data = label_data, aes(fill = eng_desc, 
-                                          label = eng_desc), 
+  geom_label_repel(data = label_data, aes(fill = name, 
+                                          label = name), 
                    force = 8, size = 3,
                    color = 'white',
                    box.padding = unit(0.25, "lines"),
@@ -107,9 +107,96 @@ ggplot(plot_data,
 
 Size of dots shows the number of datapoints, and vertical lines show 95% confidence intervals. Only ages with more than 50 observations are shown.
 
+# Developmental categories
+
+## Locomotion
+
+Here are the average trajectories for locomotor development. 
+
+```{r}
+locomotor_milestones <- c("crawling","walking","reflexes",
+                          "sitting","standing","rolling")
+
+plot_data <- filter(ms, 
+                    specific_category %in% locomotor_milestones) %>%
+  filter(n > 20) %>%
+  group_by(age_months, specific_category) %>%
+  summarise(answer = mean(answer)) %>%
+  mutate(age_years = age_months / 12)
+
+label_data <- plot_data %>% 
+  group_by(specific_category) %>% 
+  summarise(answer = min(answer), 
+            age_years = min(age_years))
+
+ggplot(plot_data,
+       aes(x = age_years, y = answer, col = specific_category)) + 
+  # geom_point() +
+  # geom_line() +
+  geom_smooth(se=FALSE, method = "loess") + 
+  ylim(c(0,1)) + 
+  xlim(c(0,2)) +
+  xlab("Age (years)") + 
+  ylab("Proportion parents responding yes") + 
+  scale_colour_solarized(guide=FALSE) + 
+  scale_fill_solarized(guide=FALSE) + 
+  geom_label_repel(data = label_data, aes(fill = specific_category, 
+                                          label = specific_category), 
+             size = 3,
+             color = 'white')
+```
+
+## Language
+
+```{r}
+selected_descs <- c("Begins babbling and attempting to form syllables", 
+                    "Points at an object that he/she wants",
+                    "His/her vocabulary consists of approximately 50 words",
+                    "Says one to four words with meaning ",
+                    "Approximately understands from 100 to 300 words")
+
+plot_data <- filter(ms, 
+                    name %in% selected_descs) %>%
+  filter(n > 50) %>%
+  mutate(name = factor(name, levels = selected_descs), 
+         age_years = age_months / 12, 
+         ci.low = binom::binom.confint(x = answer * n, n = n, 
+                                       methods = "bayes")$lower,
+         ci.high = binom::binom.confint(x = answer * n, n = n, 
+                                        methods = "bayes")$upper)
+
+label_data <- plot_data %>% 
+  group_by(name) %>% 
+  summarise(answer = median(answer), 
+            age_years = median(age_years))
+
+ggplot(plot_data,
+       aes(x = age_years, y = answer, col = name)) + 
+  geom_point(aes(size = n)) + 
+  geom_linerange(aes(ymin = ci.low, ymax = ci.high)) + 
+  # geom_smooth(se=FALSE, aes(weight = n), method = "loess") + 
+  geom_line() + 
+  scale_colour_manual(guide=FALSE, 
+                      values = stable_order_palete(length(unique(selected_descs)))) +
+  scale_fill_manual(guide=FALSE, 
+                    values = stable_order_palete(length(unique(selected_descs)))) + 
+  scale_size_continuous(guide= FALSE) + 
+  ylim(c(0,1)) + 
+  xlim(c(0,2)) +
+  xlab("Age (years)") + 
+  ylab("Proportion parents responding yes") + 
+  geom_label_repel(data = label_data, aes(fill = name, 
+                                          label = name), 
+                   force = 8, size = 3,
+                   color = 'white',
+                   box.padding = unit(0.25, "lines"),
+                   point.padding = unit(0.5, "lines")) 
+```
+
+
 # Interactive exploration
 
-Select a category and then milestones from that category. 
+Select a general category, a specific category, and then milestones from that category. 
 
 ```{r, cache=FALSE}
 library(shiny)
@@ -117,9 +204,10 @@ shinyApp(
   ui = fluidPage(
     sidebarLayout(
       sidebarPanel(
-        selectInput("cat_name", "Category:", 
+        selectInput("gen_cat", "General Category", 
                     selected = "touch", 
-                    choices = unique(ms$cat_name)),
+                    choices = as.character(unique(ms$general_category))),
+        uiOutput("spec_selector"),
         uiOutput("desc_selector")
       ),
       mainPanel(
@@ -129,8 +217,19 @@ shinyApp(
   
   server = function(input, output) {
     
+    specs <- reactive({
+      as.character(unique(ms$specific_category[ms$general_category == input$gen_cat]))
+    })
+    
     descs <- reactive({
-      unique(ms$eng_desc[ms$cat_name == input$cat_name])
+      as.character(unique(ms$name[ms$general_category == input$gen_cat &
+                                    ms$specific_category == input$spec_cat]))
+    })
+    
+    output$spec_selector <- renderUI({
+      selectInput("spec_cat", "Specific Category", 
+                     choices = specs(), 
+                     selected = specs()[1])
     })
     
     output$desc_selector <- renderUI({
@@ -141,13 +240,13 @@ shinyApp(
                      multiple = TRUE)
     })
     
-    
     output$catplot <- renderPlot({
       
       plot_data <- filter(ms, 
-                          cat_name == input$cat_name, 
-                          eng_desc %in% input$selected_descs) %>%
-        mutate(eng_desc = factor(eng_desc, levels = input$selected_descs),
+                          specific_category == input$spec_cat, 
+                          general_category == input$gen_cat,
+                          name %in% input$selected_descs) %>%
+        mutate(name = factor(name, levels = input$selected_descs),
                age_years = age_months / 12, 
                ci.low = binom.confint(x = answer * n, n = n, tol = .1,
                                              methods = "bayes")$lower,
@@ -156,12 +255,12 @@ shinyApp(
         filter(n > 50)
       
       label_data <- plot_data %>% 
-        group_by(cat_name, eng_desc) %>% 
+        group_by(specific_category, name) %>% 
         summarise(answer = median(answer), 
                   age_years = median(age_years))
       
       ggplot(plot_data,
-             aes(x = age_years, y = answer, col = eng_desc)) + 
+             aes(x = age_years, y = answer, col = name)) + 
         geom_point(aes(size = n)) + 
         geom_linerange(aes(ymin = ci.low, ymax = ci.high)) + 
         # geom_smooth(se=FALSE, aes(weight = n), method = "loess") + 
@@ -175,8 +274,8 @@ shinyApp(
       xlim(c(0,2)) +
       xlab("Age (years)") + 
       ylab("Proportion parents responding yes") + 
-      geom_label_repel(data = label_data, aes(fill = eng_desc, 
-                                              label = eng_desc), 
+      geom_label_repel(data = label_data, aes(fill = name, 
+                                              label = name), 
                        force = 8, size = 3,
                        color = 'white',
                        box.padding = unit(0.25, "lines"),
