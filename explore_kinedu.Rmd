@@ -1,145 +1,190 @@
 ---
-title: "Parenting Project - Database exploration"
+title: "Developmental milestone curves from parent report data"
 author: "Mike & Emily"
 date: "`r Sys.Date()`"
 output: 
-  html_document:
+html_document:
   toc: true
-number_sections: true
+  number_sections: true
+  runtime: shiny
 runtime: shiny
-
 ---
-```{r}
+
+```{r, echo=FALSE}
 knitr::opts_chunk$set(fig.width=8, fig.height=5, 
-                      echo=TRUE, warning=FALSE, message=FALSE, cache=FALSE)
+                      echo=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
 suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library(langcog))
 library(stringr)
 library(tidyr)
 library(ggrepel)
-library(shiny)
+library(binom)
 theme_set(theme_bw())
-
-load("kinedu_all_processed_3-11-16.RData")
 ```
 
-One panel. 
+# Introduction
+
+We are analyzing data from Kinedu, an app for parents of young children to do activities with their children. 
 
 ```{r}
-target_cat <- "touch"
-plot_data <- filter(ms, cat_name == target_cat)
-
-label_data <- plot_data %>% 
-  group_by(eng_desc) %>% 
-  summarise(answer = median(answer), 
-            age_months = median(age_months))
-
-ggplot(plot_data,
-       aes(x = age_months, y = answer, col = eng_desc)) + 
-  geom_jitter(aes(size = n), width = .3, height = 0) + 
-  geom_smooth(se=FALSE, aes(weight = n), method="loess") + 
-  scale_colour_solarized(guide=FALSE) +
-  scale_fill_solarized(guide=FALSE) +
-  ylim(c(0,1)) + 
-  xlim(c(0,24)) + 
-  geom_label_repel(data = label_data, aes(fill = eng_desc, 
-                                          label = eng_desc), 
-                   force = 4, size = 3,
-                   color = 'white',
-                   box.padding = unit(0.25, "lines"),
-                   point.padding = unit(0.5, "lines"))
+load("kinedu_all_processed_3-11-16.RData")
+ms <- filter(ms, 
+             !is.na(cat_name), 
+             !is.na(eng_desc)) 
+ms$eng_desc <- gsub("[^A-Za-z0-9/ ]|-","",ms$eng_desc)
 ```
 
-Multi-panel.
+The particular data we look at here are a set of `r sum(ms$n)` binary answers given the first time parents saw a set of `r length(unique(ms$eng_desc))` "indicators" - questions that the app asked to help with developmental categorization. 
+
+Some (random) example indicators:
+
++ "`r unique(ms$eng_desc)[20]`," in the category "`r ms$cat_name[ms$eng_desc == unique(ms$eng_desc)[20]][1]`"
++ "`r unique(ms$eng_desc)[40]`," in the category "`r ms$cat_name[ms$eng_desc == unique(ms$eng_desc)[40]][1]`"
++ "`r unique(ms$eng_desc)[60]`," in the category "`r ms$cat_name[ms$eng_desc == unique(ms$eng_desc)[60]][1]`"
+
+We're going to look first at their developmental curves, and eventually perhaps at their relationship to one another. 
+
+# Major milestones
+
+
+```{r, echo=FALSE}
+solarized_colors <- c("#268bd2", "#cb4b16", "#859900", "#993399", "#d33682",
+                      "#b58900", "#2aa198", "#6c71c4", "#dc322f")
+
+stable_order_palete <- function(num_values) {
+  c(rep(solarized_colors, num_values %/% length(solarized_colors)),
+    solarized_colors[1:(num_values %% length(solarized_colors))])
+}
+```
+
+Here is a set of major milestones of interest. 
 
 ```{r}
 plot_data <- filter(ms, cat_name %in% c("cognitive","crawl","smile","walk"))
+selected_descs <- c("Begins to walk alone", 
+                    "Begins to crawl",
+                    "Smiles and begins to babble",
+                    "Says one to four words with meaning ",
+                    "Switches objects from one hand to the other")
+
+plot_data <- filter(ms, 
+                    eng_desc %in% selected_descs) %>%
+  filter(n > 50) %>%
+  mutate(eng_desc = factor(eng_desc, levels = selected_descs), 
+         age_years = age_months / 12, 
+         ci.low = binom::binom.confint(x = answer * n, n = n, 
+                                       methods = "bayes")$lower,
+         ci.high = binom::binom.confint(x = answer * n, n = n, 
+                                        methods = "bayes")$upper)
+>>>>>>> e595735b227af7230485b7029fa85f4e3b1dc441
 
 label_data <- plot_data %>% 
   group_by(cat_name, eng_desc) %>% 
   summarise(answer = median(answer), 
-            age_months = median(age_months))
+            age_years = median(age_years))
 
 ggplot(plot_data,
-       aes(x = age_months, y = answer, col = eng_desc)) + 
-  geom_jitter(aes(size = n), width = .3, height = 0) + 
-  facet_wrap(~cat_name) + 
-  geom_smooth(se=FALSE, aes(weight = n), method="loess") + 
-  scale_colour_solarized(guide=FALSE) + 
-  scale_fill_solarized(guide=FALSE) + 
+       aes(x = age_years, y = answer, col = eng_desc)) + 
+  geom_point(aes(size = n)) + 
+  geom_linerange(aes(ymin = ci.low, ymax = ci.high)) + 
+  # geom_smooth(se=FALSE, aes(weight = n), method = "loess") + 
+  geom_line() + 
+  scale_colour_manual(guide=FALSE, 
+                      values = stable_order_palete(length(unique(selected_descs)))) +
+  scale_fill_manual(guide=FALSE, 
+                    values = stable_order_palete(length(unique(selected_descs)))) + 
+  scale_size_continuous(guide= FALSE) + 
   ylim(c(0,1)) + 
-  xlim(c(0,24)) + 
-#   geom_label(data = label_data, aes(fill = eng_desc, 
-#                                     label = eng_desc), 
-#              col = "white") 
+  xlim(c(0,2)) +
+  xlab("Age (years)") + 
+  ylab("Proportion parents responding yes") + 
   geom_label_repel(data = label_data, aes(fill = eng_desc, 
                                           label = eng_desc), 
-                   force = 8, size = 2,
+                   force = 8, size = 3,
                    color = 'white',
                    box.padding = unit(0.25, "lines"),
-                   point.padding = unit(0.5, "lines"))
+                   point.padding = unit(0.5, "lines")) 
 ```
 
-Interactive by description. 
+Size of dots shows the number of datapoints, and vertical lines show 95% confidence intervals. Only ages with more than 50 observations are shown.
+
+# Interactive exploration
+
+Select a category and then milestones from that category. 
 
 ```{r, cache=FALSE}
-ms$eng_desc <- factor(ms$eng_desc)
-
 shinyApp(
   ui = fluidPage(
-    selectizeInput("eng_descs", "Labels", #selected = c("Shakes objects"),
-                   choices = gsub("[^[:alnum:] ]","",unique(ms$eng_desc)), 
-                   multiple=TRUE),
-    plotOutput("descplot")
+    sidebarLayout(
+      sidebarPanel(
+        selectInput("cat_name", "Category:", 
+                    selected = "touch", 
+                    choices = unique(ms$cat_name)),
+        uiOutput("desc_selector")
+      ),
+      mainPanel(
+        plotOutput("catplot"))
+    )
   ),
   
   server = function(input, output) {
-    output$descplot <- renderPlot({
-      ggplot(filter(ms, eng_desc %in% input$eng_descs),
-             aes(x = age_months, y = answer, col = eng_desc, size = n)) + 
-        geom_point() + 
-        geom_smooth(se=FALSE, span=4) + 
-        scale_colour_solarized(guide=FALSE) + 
-        ylim(c(0,1)) + 
-        xlim(c(0,24)) + 
-        ggrepel::geom_text_repel(data = filter(ms, eng_desc %in% input$eng_descs) %>% 
-                                   group_by(eng_desc) %>% 
-                                   filter(age_months == min(age_months)),
-                                 aes(label = eng_desc))
+    
+    descs <- reactive({
+      unique(ms$eng_desc[ms$cat_name == input$cat_name])
     })
-  },
-  
-  options = list(height = 700)
-)
-
-```
-
-Interactive by category.
-
-```{r, cache=FALSE}
-shinyApp(
-  ui = fluidPage(
-    selectInput("cat_name", "Category:", 
-                choices = unique(ms$cat_name)),
-    plotOutput("catplot")
-  ),
-  
-  server = function(input, output) {
+    
+    output$desc_selector <- renderUI({
+      selectizeInput("selected_descs", "Labels", 
+                     choices = descs(), 
+                     selected = descs()[1],
+                     options = list(maxItems = 9), 
+                     multiple = TRUE)
+    })
+    
+    
     output$catplot <- renderPlot({
-      ggplot(filter(ms,cat_name == input$cat_name),
-             aes(x = age_months, y = answer, col = eng_desc)) + 
-        geom_point() + 
-        geom_smooth(se=FALSE, method="lm", formula = y ~ log(x)) + 
-        scale_colour_solarized(guide=FALSE) + 
-        ylim(c(0,1)) + 
-        ggrepel::geom_text_repel(data = filter(ms, cat_name == input$cat_name) %>% 
-                                   group_by(eng_desc) %>% 
-                                   filter(age_months == min(age_months)),
-                                 aes(label = eng_desc))
+      
+      plot_data <- filter(ms, 
+                          cat_name == input$cat_name, 
+                          eng_desc %in% input$selected_descs) %>%
+        mutate(eng_desc = factor(eng_desc, levels = input$selected_descs),
+               age_years = age_months / 12, 
+               ci.low = binom.confint(x = answer * n, n = n, tol = .1,
+                                             methods = "bayes")$lower,
+               ci.high = binom.confint(x = answer * n, n = n, tol = .1,
+                                              methods = "bayes")$upper) %>%
+        filter(n > 50)
+      
+      label_data <- plot_data %>% 
+        group_by(cat_name, eng_desc) %>% 
+        summarise(answer = median(answer), 
+                  age_years = median(age_years))
+      
+      ggplot(plot_data,
+             aes(x = age_years, y = answer, col = eng_desc)) + 
+        geom_point(aes(size = n)) + 
+        geom_linerange(aes(ymin = ci.low, ymax = ci.high)) + 
+        # geom_smooth(se=FALSE, aes(weight = n), method = "loess") + 
+        geom_line() + 
+        scale_size_continuous(guide= FALSE) + 
+        scale_colour_manual(guide=FALSE, 
+                            values = stable_order_palete(length(unique(input$selected_descs)))) +
+        scale_fill_manual(guide=FALSE, 
+                          values = stable_order_palete(length(unique(input$selected_descs)))) + 
+      ylim(c(0,1)) + 
+      xlim(c(0,2)) +
+      xlab("Age (years)") + 
+      ylab("Proportion parents responding yes") + 
+      geom_label_repel(data = label_data, aes(fill = eng_desc, 
+                                              label = eng_desc), 
+                       force = 8, size = 3,
+                       color = 'white',
+                       box.padding = unit(0.25, "lines"),
+                       point.padding = unit(0.5, "lines"))
     })
   },
   
   options = list(height = 700)
-)
+  )
 ```
