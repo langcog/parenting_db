@@ -19,6 +19,7 @@ library(stringr)
 library(tidyr)
 library(ggrepel)
 library(binom)
+library(shiny)
 theme_set(theme_bw())
 ```
 
