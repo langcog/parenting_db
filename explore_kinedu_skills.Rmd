@@ -6,7 +6,6 @@ output:
 html_document:
   toc: true
   number_sections: true
-runtime: shiny
 ---
 
 ```{r, echo=FALSE}
@@ -40,7 +39,7 @@ We are analyzing data from Kinedu, an app for parents of young children to do ac
 Note: some indicators have been dropped during milestone revision.
 
 ```{r}
-load("kinedu_all_processed_3-11-16.RData")
+load("data/kinedu_all_processed_3-11-16.RData")
 
 skills <- read.csv("skills.csv") 
 info <- read.csv("info.csv") %>%
@@ -52,68 +51,6 @@ ms <- right_join(ms, skills) %>% # remove duplicated indicators
   select(indicator_id, age_months, answer, n, skill, 
          general_category, name) 
 ```
-
-The particular data we look at here are a set of `r prettyNum(sum(ms$n), big.mark=",", scientific=FALSE)` binary answers given the first time parents saw a set of `r length(unique(ms$name))` "indicators" - questions that the app asked to help with developmental categorization. 
-
-Some (random) example indicators:
-
-+ "`r unique(ms$name)[20]`," in the category "`r ms$specific_category[ms$name == unique(ms$name)[20]][1]`"
-+ "`r unique(ms$name)[40]`," in the category "`r ms$specific_category[ms$name == unique(ms$name)[40]][1]`"
-+ "`r unique(ms$name)[60]`," in the category "`r ms$specific_category[ms$name == unique(ms$name)[60]][1]`"
-
-This report uses an (in-progress) manual categorization of markers to examine their developmental curves, both individually and in aggregate.
-
-# Major milestones
-
-Here is a set of major milestones of interest. 
-
-```{r}
-plot_data <- filter(ms, cat_name %in% c("cognitive","crawl","smile","walk"))
-selected_descs <- c("Begins to walk alone", 
-                    "Begins to crawl",
-                    "Smiles and begins to babble",
-                    "Says one to four words with meaning ",
-                    "Switches objects from one hand to the other")
-
-plot_data <- filter(ms, 
-                    name %in% selected_descs) %>%
-  filter(n > 50) %>%
-  mutate(name = factor(name, levels = selected_descs), 
-         age_years = age_months / 12, 
-         ci.low = binom::binom.confint(x = answer * n, n = n, 
-                                       methods = "bayes")$lower,
-         ci.high = binom::binom.confint(x = answer * n, n = n, 
-                                        methods = "bayes")$upper)
-
-label_data <- plot_data %>% 
-  group_by(name) %>% 
-  summarise(answer = median(answer), 
-            age_years = median(age_years))
-
-ggplot(plot_data,
-       aes(x = age_years, y = answer, col = name)) + 
-  geom_point(aes(size = n)) + 
-  geom_linerange(aes(ymin = ci.low, ymax = ci.high)) + 
-  # geom_smooth(se=FALSE, aes(weight = n), method = "loess") + 
-  geom_line() + 
-  scale_colour_manual(guide=FALSE, 
-                      values = stable_order_palete(length(unique(selected_descs)))) +
-  scale_fill_manual(guide=FALSE, 
-                    values = stable_order_palete(length(unique(selected_descs)))) + 
-  scale_size_continuous(guide= FALSE) + 
-  ylim(c(0,1)) + 
-  xlim(c(0,2)) +
-  xlab("Age (years)") + 
-  ylab("Proportion parents responding yes") + 
-  geom_label_repel(data = label_data, aes(fill = name, 
-                                          label = name), 
-                   force = 8, size = 3,
-                   color = 'white',
-                   box.padding = unit(0.25, "lines"),
-                   point.padding = unit(0.5, "lines")) 
-```
-
-Size of dots shows the number of datapoints, and vertical lines show 95% confidence intervals. Only ages with more than 50 observations are shown.
 
 # Developmental categories
 
@@ -190,52 +127,6 @@ ggplot(plot_data,
                                           label = skill), 
              size = 3,
              color = 'white')
-```
-
-
-```{r}
-selected_descs <- c("Begins babbling and attempting to form syllables", 
-                    "Points at an object that he/she wants",
-                    "His/her vocabulary consists of approximately 50 words",
-                    "Says one to four words with meaning ",
-                    "Approximately understands from 100 to 300 words")
-
-plot_data <- filter(ms, 
-                    name %in% selected_descs) %>%
-  filter(n > 50) %>%
-  mutate(name = factor(name, levels = selected_descs), 
-         age_years = age_months / 12, 
-         ci.low = binom::binom.confint(x = answer * n, n = n, 
-                                       methods = "bayes")$lower,
-         ci.high = binom::binom.confint(x = answer * n, n = n, 
-                                        methods = "bayes")$upper)
-
-label_data <- plot_data %>% 
-  group_by(name) %>% 
-  summarise(answer = median(answer), 
-            age_years = median(age_years))
-
-ggplot(plot_data,
-       aes(x = age_years, y = answer, col = name)) + 
-  geom_point(aes(size = n)) + 
-  geom_linerange(aes(ymin = ci.low, ymax = ci.high)) + 
-  # geom_smooth(se=FALSE, aes(weight = n), method = "loess") + 
-  geom_line() + 
-  scale_colour_manual(guide=FALSE, 
-                      values = stable_order_palete(length(unique(selected_descs)))) +
-  scale_fill_manual(guide=FALSE, 
-                    values = stable_order_palete(length(unique(selected_descs)))) + 
-  scale_size_continuous(guide= FALSE) + 
-  ylim(c(0,1)) + 
-  xlim(c(0,2)) +
-  xlab("Age (years)") + 
-  ylab("Proportion parents responding yes") + 
-  geom_label_repel(data = label_data, aes(fill = name, 
-                                          label = name), 
-                   force = 8, size = 3,
-                   color = 'white',
-                   box.padding = unit(0.25, "lines"),
-                   point.padding = unit(0.5, "lines")) 
 ```
 
 
@@ -330,4 +221,58 @@ shinyApp(
   
   options = list(height = 700)
   )
+```
+
+# Try to make growth curves
+
+Explore just a single skill for now. 
+
+```{r}
+load("data/kinedu_all_3-11-16.RData")
+
+locomotor_ids <- filter(skills, skill %in% locomotor_milestones)
+
+locomotor <- d %>%
+  filter(indicator_id %in% locomotor_ids$indicator_id) %>%
+  left_join(select(locomotor_ids, indicator_id, skill, level, milestone))
+```
+
+Construct locomotor indices.
+
+```{r}
+n_locomotor <- locomotor %>%
+  group_by(baby_id, skill) %>%
+  summarise(n = n())
+
+qplot(n, data = filter(n_locomotor, n > 1), binwidth = 1) + 
+  xlim(c(0,20))
+```
+
+Take 2k kids with more than 5 milestones.
+
+```{r}
+library(quantregGrowth)
+
+lms <- locomotor %>%
+  group_by(baby_id, age_months, skill) %>%
+  summarise(prop = mean(answer), 
+            n = n()) %>%
+  filter(n > 10)
+
+mod <- gcrq(formula = prop ~ ps(Age, monotone = 1, lambda = 1000), 
+     tau = taus, data = cdidata)
+
+ages <- 8:18
+newdata <- data.frame(Age = ages)
+
+preds <- predictQR_fixed(mod, newdata = newdata) %>%
+  data.frame %>%
+  mutate(age = ages) %>%
+  gather(percentile, pred, starts_with("X")) %>%
+  mutate(percentile = as.character(as.numeric(str_replace(percentile, "X", "")) * 100))
+
+
+ggplot(filter(lms, skill == "Crawling"), 
+       aes(x = age_months, y = prop)) + 
+  geom_jitter() 
 ```
