@@ -4,8 +4,8 @@ author: "Mike & Emily"
 date: "`r Sys.Date()`"
 output: 
 html_document:
-  toc: true
-  number_sections: true
+toc: true
+number_sections: true
 runtime: shiny
 ---
 
@@ -20,6 +20,7 @@ library(tidyr)
 library(ggrepel)
 library(binom)
 library(shiny)
+library(readr)
 theme_set(theme_bw())
 ```
 
@@ -31,6 +32,9 @@ stable_order_palete <- function(num_values) {
   c(rep(solarized_colors, num_values %/% length(solarized_colors)),
     solarized_colors[1:(num_values %% length(solarized_colors))])
 }
+
+# minimum N for inclusions of a datapoint
+MIN_N <- 50
 ```
 
 # Introduction
@@ -38,13 +42,13 @@ stable_order_palete <- function(num_values) {
 We are analyzing data from Kinedu, an app for parents of young children to do activities with their children. 
 
 ```{r}
-load("kinedu_all_processed_3-11-16.RData")
-info <- read.csv("info.csv") %>%
+load("data/kinedu_all_processed_3-11-16.RData")
+info <- read_csv("info.csv") %>%
   filter(!duplicated(name))
 
 ms <- right_join(ms, info) %>% # remove duplicated indicators
   select(indicator_id, age_months, answer, n, general_category, 
-         specific_category, name) 
+         specific_category, name, cat_name, starts_with("WHO"), starts_with("CDC"), redundant) 
 ```
 
 The particular data we look at here are a set of `r prettyNum(sum(ms$n), big.mark=",", scientific=FALSE)` binary answers given the first time parents saw a set of `r length(unique(ms$name))` "indicators" - questions that the app asked to help with developmental categorization. 
@@ -71,7 +75,7 @@ selected_descs <- c("Begins to walk alone",
 
 plot_data <- filter(ms, 
                     name %in% selected_descs) %>%
-  filter(n > 50) %>%
+  filter(n > MIN_N) %>%
   mutate(name = factor(name, levels = selected_descs), 
          age_years = age_months / 12, 
          ci.low = binom::binom.confint(x = answer * n, n = n, 
@@ -109,6 +113,193 @@ ggplot(plot_data,
 
 Size of dots shows the number of datapoints, and vertical lines show 95% confidence intervals. Only ages with more than 50 observations are shown.
 
+# Interactive exploration
+
+Select a general category, a specific category, and then milestones from that category. 
+
+```{r, cache=FALSE}
+shinyApp(
+  ui = fluidPage(
+    sidebarLayout(
+      sidebarPanel(
+        selectInput("gen_cat", "General Category", 
+                    selected = "touch", 
+                    choices = as.character(unique(ms$general_category))),
+        uiOutput("spec_selector"),
+        uiOutput("desc_selector")
+      ),
+      mainPanel(
+        plotOutput("catplot"))
+    )
+  ),
+  
+  server = function(input, output) {
+    
+    specs <- reactive({
+      as.character(unique(ms$specific_category[ms$general_category == input$gen_cat]))
+    })
+    
+    descs <- reactive({
+      as.character(unique(ms$name[ms$general_category == input$gen_cat &
+                                    ms$specific_category == input$spec_cat]))
+    })
+    
+    output$spec_selector <- renderUI({
+      selectInput("spec_cat", "Specific Category", 
+                  choices = specs(), 
+                  selected = specs()[1])
+    })
+    
+    output$desc_selector <- renderUI({
+      selectizeInput("selected_descs", "Labels", 
+                     choices = descs(), 
+                     selected = descs()[1],
+                     options = list(maxItems = 9), 
+                     multiple = TRUE)
+    })
+    
+    output$catplot <- renderPlot({
+      
+      plot_data <- filter(ms, 
+                          specific_category == input$spec_cat, 
+                          general_category == input$gen_cat,
+                          name %in% input$selected_descs) %>%
+        mutate(name = factor(name, levels = input$selected_descs),
+               age_years = age_months / 12, 
+               ci.low = binom.confint(x = answer * n, n = n, tol = .1,
+                                      methods = "bayes")$lower,
+               ci.high = binom.confint(x = answer * n, n = n, tol = .1,
+                                       methods = "bayes")$upper) %>%
+        filter(n > MIN_N)
+      
+      label_data <- plot_data %>% 
+        group_by(specific_category, name) %>% 
+        summarise(answer = median(answer), 
+                  age_years = median(age_years))
+      
+      ggplot(plot_data,
+             aes(x = age_years, y = answer, col = name)) + 
+        geom_point(aes(size = n)) + 
+        geom_linerange(aes(ymin = ci.low, ymax = ci.high)) + 
+        # geom_smooth(se=FALSE, aes(weight = n), method = "loess") + 
+        geom_line() + 
+        scale_size_continuous(guide= FALSE) + 
+        scale_colour_manual(guide=FALSE, 
+                            values = stable_order_palete(length(unique(input$selected_descs)))) +
+        scale_fill_manual(guide=FALSE, 
+                          values = stable_order_palete(length(unique(input$selected_descs)))) + 
+        ylim(c(0,1)) + 
+        xlim(c(0,2)) +
+        xlab("Age (years)") + 
+        ylab("Proportion parents responding yes") + 
+        geom_label_repel(data = label_data, aes(fill = name, 
+                                                label = name), 
+                         force = 8, size = 3,
+                         color = 'white',
+                         box.padding = unit(0.25, "lines"),
+                         point.padding = unit(0.5, "lines"))
+    })
+  },
+  
+  options = list(height = 700)
+)
+```
+
+# WHO & CDI Milestones
+
+Comparison to World Health Organization standards. These are only for locomotor milestones. 
+
+```{r}
+who <- ms %>%
+  ungroup %>%
+  filter(!is.na(WHO_months_50th_pcntl)) %>%
+  mutate(name = factor(name, levels = unique(name)))
+
+who_ms <- who %>%
+  group_by(name) %>%
+  summarise(who = mean(WHO_months_50th_pcntl),
+            who_lower = mean(WHO_CI_lower), 
+            who_upper = mean(WHO_CI_upper), 
+            milestone = WHO_milestone[1], 
+            x = 0, y = 1)
+
+ggplot(filter(who, n > MIN_N), 
+       aes(x = age_months, y = answer)) + 
+  geom_point(aes(size = n)) + 
+  geom_smooth() + 
+  facet_wrap(~name) + 
+  geom_vline(data = who_ms, aes(xintercept = who), lty = 2) + 
+  xlim(c(0,24)) + ylim(c(0,1)) + 
+  geom_text(data = who_ms, aes(x = x, y = y, 
+                               label = milestone), 
+            hjust = 0)
+```
+
+Some sample CDC milestones. 
+
+```{r}
+cdc <- ms %>%
+  ungroup() %>%
+  filter(!is.na(cdc_months)) %>%
+  mutate(name = factor(name, levels = unique(name)))
+
+cdc_ms <- cdc %>%
+  group_by(name, cdc_category) %>%
+  summarise(cdc = mean(cdc_months),
+            wording = cdc_wording[1], 
+            x = 0, y = 1)
+
+cat <- "lang/comm"
+
+ggplot(filter(cdc, n > MIN_N, cdc_category == cat), 
+       aes(x = age_months, y = answer)) + 
+  geom_point(aes(size = n)) + 
+  geom_smooth(span = 1) + 
+  facet_wrap(~name) + 
+  geom_vline(data = filter(cdc_ms, cdc_category == cat), 
+             aes(xintercept = cdc), lty = 2) + 
+  xlim(c(0,24)) + ylim(c(0,1)) + 
+  geom_text(data = filter(cdc_ms, cdc_category == cat), 
+            aes(x = x, y = y, label = wording), 
+            hjust = 0, size = 2) + 
+  theme(strip.text = element_text(size = 6, hjust = 0))
+```
+
+## Interactive Browser for CDC categories
+
+```{r, cache=FALSE}
+shinyApp(
+  ui = fluidPage(
+    sidebarLayout(
+      sidebarPanel(
+        selectInput("cat", "CDC Category", 
+                    selected = "movement", 
+                    choices = as.character(unique(cdc$cdc_category)))
+      ),
+      mainPanel(
+        plotOutput("catplot"))
+    )
+  ),
+  
+  server = function(input, output) {
+    output$catplot <- renderPlot({
+      
+      ggplot(filter(cdc, n > MIN_N, cdc_category == input$cat), 
+             aes(x = age_months, y = answer)) + 
+        geom_point(aes(size = n)) + 
+        geom_line(col = "blue") + 
+        facet_wrap(~name) + 
+        geom_vline(data = filter(cdc_ms, cdc_category == input$cat), 
+                   aes(xintercept = cdc), lty = 2) + 
+        xlim(c(0,24)) + ylim(c(0,1)) + 
+        geom_text(data = filter(cdc_ms, cdc_category == input$cat), 
+                  aes(x = x, y = y, label = wording), 
+                  hjust = 0, size = 2)
+    })
+  }
+)
+```
+
 # Developmental categories
 
 ## Locomotion
@@ -144,22 +335,25 @@ ggplot(plot_data,
   scale_fill_solarized(guide=FALSE) + 
   geom_label_repel(data = label_data, aes(fill = specific_category, 
                                           label = specific_category), 
-             size = 3,
-             color = 'white')
+                   size = 3,
+                   color = 'white')
 ```
 
 ## Language
 
+Selected language milestones - CDC milestone timing is shown along the bottom row. 
+
 ```{r}
-selected_descs <- c("Begins babbling and attempting to form syllables", 
+selected_descs <- c("Smiles and begins to babble", 
                     "Points at an object that he/she wants",
-                    "His/her vocabulary consists of approximately 50 words",
-                    "Says one to four words with meaning ",
-                    "Approximately understands from 100 to 300 words")
+                    "Begins to talk a bit (mama, dada)", 
+                    "Says one to four words with meaning",
+                    "Speaks with gestures",
+                    "Combines words to form short phrases")
 
 plot_data <- filter(ms, 
                     name %in% selected_descs) %>%
-  filter(n > 50) %>%
+  filter(n > MIN_N) %>%
   mutate(name = factor(name, levels = selected_descs), 
          age_years = age_months / 12, 
          ci.low = binom::binom.confint(x = answer * n, n = n, 
@@ -168,9 +362,11 @@ plot_data <- filter(ms,
                                         methods = "bayes")$upper)
 
 label_data <- plot_data %>% 
-  group_by(name) %>% 
+  group_by(name, cdc_wording) %>% 
   summarise(answer = median(answer), 
-            age_years = median(age_years))
+            age_years = median(age_years), 
+            cdc_years = mean(cdc_months, na.rm=TRUE)/12 + 
+              rnorm(n = 1, mean = 0, sd = .05)) # to jitter
 
 ggplot(plot_data,
        aes(x = age_years, y = answer, col = name)) + 
@@ -184,106 +380,18 @@ ggplot(plot_data,
                     values = stable_order_palete(length(unique(selected_descs)))) + 
   scale_size_continuous(guide= FALSE) + 
   ylim(c(0,1)) + 
-  xlim(c(0,2)) +
+  xlim(c(0,2.2)) +
   xlab("Age (years)") + 
   ylab("Proportion parents responding yes") + 
+  geom_linerange(data = label_data, 
+             aes(x = cdc_years, ymin = 0, 
+                 ymax = .1, col = name), size = 2) + 
   geom_label_repel(data = label_data, aes(fill = name, 
                                           label = name), 
                    force = 8, size = 3,
                    color = 'white',
                    box.padding = unit(0.25, "lines"),
                    point.padding = unit(0.5, "lines")) 
+
 ```
 
-
-# Interactive exploration
-
-Select a general category, a specific category, and then milestones from that category. 
-
-```{r, cache=FALSE}
-shinyApp(
-  ui = fluidPage(
-    sidebarLayout(
-      sidebarPanel(
-        selectInput("gen_cat", "General Category", 
-                    selected = "touch", 
-                    choices = as.character(unique(ms$general_category))),
-        uiOutput("spec_selector"),
-        uiOutput("desc_selector")
-      ),
-      mainPanel(
-        plotOutput("catplot"))
-    )
-  ),
-  
-  server = function(input, output) {
-    
-    specs <- reactive({
-      as.character(unique(ms$specific_category[ms$general_category == input$gen_cat]))
-    })
-    
-    descs <- reactive({
-      as.character(unique(ms$name[ms$general_category == input$gen_cat &
-                                    ms$specific_category == input$spec_cat]))
-    })
-    
-    output$spec_selector <- renderUI({
-      selectInput("spec_cat", "Specific Category", 
-                     choices = specs(), 
-                     selected = specs()[1])
-    })
-    
-    output$desc_selector <- renderUI({
-      selectizeInput("selected_descs", "Labels", 
-                     choices = descs(), 
-                     selected = descs()[1],
-                     options = list(maxItems = 9), 
-                     multiple = TRUE)
-    })
-    
-    output$catplot <- renderPlot({
-      
-      plot_data <- filter(ms, 
-                          specific_category == input$spec_cat, 
-                          general_category == input$gen_cat,
-                          name %in% input$selected_descs) %>%
-        mutate(name = factor(name, levels = input$selected_descs),
-               age_years = age_months / 12, 
-               ci.low = binom.confint(x = answer * n, n = n, tol = .1,
-                                             methods = "bayes")$lower,
-               ci.high = binom.confint(x = answer * n, n = n, tol = .1,
-                                              methods = "bayes")$upper) %>%
-        filter(n > 50)
-      
-      label_data <- plot_data %>% 
-        group_by(specific_category, name) %>% 
-        summarise(answer = median(answer), 
-                  age_years = median(age_years))
-      
-      ggplot(plot_data,
-             aes(x = age_years, y = answer, col = name)) + 
-        geom_point(aes(size = n)) + 
-        geom_linerange(aes(ymin = ci.low, ymax = ci.high)) + 
-        # geom_smooth(se=FALSE, aes(weight = n), method = "loess") + 
-        geom_line() + 
-        scale_size_continuous(guide= FALSE) + 
-        scale_colour_manual(guide=FALSE, 
-                            values = stable_order_palete(length(unique(input$selected_descs)))) +
-        scale_fill_manual(guide=FALSE, 
-                          values = stable_order_palete(length(unique(input$selected_descs)))) + 
-      ylim(c(0,1)) + 
-      xlim(c(0,2)) +
-      xlab("Age (years)") + 
-      ylab("Proportion parents responding yes") + 
-      geom_label_repel(data = label_data, aes(fill = name, 
-                                              label = name), 
-                       force = 8, size = 3,
-                       color = 'white',
-                       box.padding = unit(0.25, "lines"),
-                       point.padding = unit(0.5, "lines"))
-    })
-  },
-  
-  options = list(height = 700)
-  )
-```
