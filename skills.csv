@@ -1,0 +1,330 @@
+indicator_id,milestone,area,month,skill,level,category,general_category
+183,Looks for a dropped object,Cognitive,6,Abstract thinking and early knowledge,Basic,Abstract reasoning,Cognitive
+199,"Notices the characteristics of objects such as shape, texture, or size (e.g. some things roll and some don't)",Cognitive,12,Abstract thinking and early knowledge,Basic,Abstract reasoning,Cognitive
+206,Pays attention to the location of objects he/she has seen hidden,Cognitive,9,Abstract thinking and early knowledge,Basic,Abstract reasoning,Cognitive
+12,Searches for hidden toys,Cognitive,9,Abstract thinking and early knowledge,Basic,Abstract reasoning,Cognitive
+203,Finds hidden objects under one cover,Cognitive,9,Abstract thinking and early knowledge,Basic,Abstract reasoning,Cognitive
+69,Identifies animals by their sounds; knows which animal makes which sound,Cognitive,11,Abstract thinking and early knowledge,Basic,Imitation,Cognitive
+148,Understands certain norms (e.g. knows that paint goes on paper),Cognitive,18,Abstract thinking and early knowledge,Intermediate,Knowledge,Cognitive
+317,Finds objects hidden under two or three covers,Cognitive,24,Abstract thinking and early knowledge,Advanced,Abstract reasoning,Cognitive
+385,Knows the difference between up and down,Cognitive,18,Abstract thinking and early knowledge,Intermediate,Abstract reasoning,Cognitive
+386,Knows the difference between front and back,Cognitive,18,Abstract thinking and early knowledge,Intermediate,Abstract reasoning,Cognitive
+387,Knows the difference between in and out,Cognitive,18,Abstract thinking and early knowledge,Intermediate,Abstract reasoning,Cognitive
+334,Knows the difference between one or two and many,Cognitive,24,Abstract thinking and early knowledge,Advanced,Abstract reasoning,Cognitive
+569,Knows the difference between loud and soft volume,Cognitive,22,Abstract thinking and early knowledge,Advanced,Abstract reasoning,Cognitive
+523,Knows the difference between big and small objects,Cognitive,24,Abstract thinking and early knowledge,Advanced,Abstract reasoning,Cognitive
+548,Makes simple comparisons between two objects (e.g. identifying which one is larger),Cognitive,24,Abstract thinking and early knowledge,Advanced,Abstract reasoning,Cognitive
+574,Understands the function of one or more body parts (e.g. ears are for hearing),Cognitive,24,Abstract thinking and early knowledge,Advanced,Abstract reasoning,Cognitive
+568,Identifies tools used for different professions (e.g. a doctor's stethoscope),Cognitive,24,Abstract thinking and early knowledge,Advanced,Early knowledge,Cognitive
+578,Recognizes that plants are living things (e.g. helps water them),Cognitive,24,Abstract thinking and early knowledge,Advanced,Early knowledge,Cognitive
+579,"Recognizes different professions in images (e.g. ""doctor"")",Cognitive,24,Abstract thinking and early knowledge,Advanced,Early knowledge,Cognitive
+237,Demonstrates satisfaction when fed and caressed,Social and Emotional,4,Affection and Attachment,Basic,Affection and attachment,Social_Emotional
+122,Calms down when he/she hears familiar voices,Social and Emotional,3,Affection and Attachment,Basic,Affection and attachment,Social_Emotional
+129,Reacts with joy towards signs of affection,Social and Emotional,4,Affection and Attachment,Basic,Affection and attachment,Social_Emotional
+283,Smiles at people,Social and Emotional,2,Affection and Attachment,Basic,Affection and attachment,Social_Emotional
+97,Recognizes his/her parents,Social and Emotional,4,Affection and Attachment,Basic,Affection and attachment,Social_Emotional
+20,Stretches his/her arms to be carried,Social and Emotional,6,Affection and Attachment,Intermediate,Affection and attachment,Social_Emotional
+111,Responds differently towards a family member than a stranger,Social and Emotional,6,Affection and Attachment,Intermediate,Affection and attachment,Social_Emotional
+186,Is shy or anxious with strangers,Social and Emotional,12,Affection and Attachment,Intermediate,Affection and attachment,Social_Emotional
+252,Recognizes and interacts with familiar people,Social and Emotional,10,Affection and Attachment,Intermediate,Affection and attachment,Social_Emotional
+253,Is playful with others,Social and Emotional,10,Affection and Attachment,Intermediate,Affection and attachment,Social_Emotional
+36,Shows preferences for certain people and toys,Social and Emotional,12,Affection and Attachment,Intermediate,Affection and attachment,Social_Emotional
+308,Shows affection to familiar people,Social and Emotional,18,Affection and Attachment,Advanced,Affection and attachment,Social_Emotional
+384,Searches for familiar people when they're named,Social and Emotional,15,Affection and Attachment,Advanced,Affection and attachment,Social_Emotional
+441,Associates objects with the family members that use them (e.g. mom's purse),Social and Emotional,19,Affection and Attachment,Advanced,Affection and attachment,Social_Emotional
+247,"Makes guttural, gurgling sounds like ""ga"", ""gu"", ""gr"" ",Linguistic,2,Babbling,Basic,Babbling,Language
+79,Expresses like or dislike with his/her face or shrieks,Linguistic,4,Babbling,Basic,Babbling,Language
+143,Vocalizes as a response towards someone's voice,Linguistic,6,Babbling,Intermediate,Babbling,Language
+197,"Emits vowel sounds, such as ""eh"" or ""ah""",Linguistic,6,Babbling,Intermediate,Babbling,Language
+301,Varies the tone or intensity of his/her babbling,Linguistic,6,Babbling,Intermediate,Babbling,Language
+31,"Makes repeated syllable sounds (consonant with vowel ""baba, dada..."") ",Linguistic,6,Babbling,Intermediate,Babbling,Language
+196,"Says consonant sounds (""m, n, p, t, dÄ"")",Linguistic,6,Babbling,Intermediate,Babbling,Language
+23,"Babbles with inflection, imitating conversations",Linguistic,12,Babbling,Advanced,Babbling,Language
+54,Imitates a syllable pronounced by someone else,Linguistic,9,Babbling,Advanced,Babbling,Language
+126,Interacts with other kids by babbling,Linguistic,10,Babbling,Advanced,Babbling,Language
+3,Shakes arms when something catches his/her attention,Linguistic,5,Communicating through gestures,Basic,Gesturing,Language
+278,Points to obtain an object he/she wants,Linguistic,8,Communicating through gestures,Intermediate,Gesturing,Language
+22,Uses simple gestures like waving bye-bye or clapping,Linguistic,12,Communicating through gestures,Advanced,Gesturing,Language
+88,Asks for help by babbling or gesturing,Linguistic,12,Communicating through gestures,Advanced,Gesturing,Language
+64,"While lying face down, lifts one arm supporting his/her weight on the other one",Physical,5,Crawling,Basic,Crawling,Locomotor
+158,Extends his/her arms forward while lying face down,Physical,4,Crawling,Basic,Crawling,Locomotor
+239,Uses legs to push him/herself forward while lying face down,Physical,5,Crawling,Basic,Crawling,Locomotor
+269,Stretches out to reach something while lying face down,Physical,5,Crawling,Basic,Crawling,Locomotor
+9,Props him/herself up on extended arms while lying face down,Physical,4,Crawling,Basic,Crawling,Locomotor
+265,Can move around dragging him/herself without lifting the belly,Physical,6,Crawling,Intermediate,Crawling,Locomotor
+116,Drags him/herself to reach something,Physical,7,Crawling,Intermediate,Crawling,Locomotor
+173,Positions him/herself on hands and knees,Physical,7,Crawling,Intermediate,Crawling,Locomotor
+262,Rocks back and forth on his/her hands and knees,Physical,6,Crawling,Intermediate,Crawling,Locomotor
+267,"Moves around the room; scooting, shuffling, or rolling",Physical,8,Crawling,Intermediate,Crawling,Locomotor
+17,Crawls,Physical,9,Crawling,Advanced,Crawling,Locomotor
+72,Crawls up stairs,Physical,11,Crawling,Advanced,Crawling,Locomotor
+164,Changes directions easily when crawling,Physical,9,Crawling,Advanced,Crawling,Locomotor
+230,Surpasses obstacles when crawling ,Physical,9,Crawling,Advanced,Crawling,Locomotor
+123,Climbs furniture with help,Physical,12,Crawling,Advanced,Crawling,Locomotor
+413,Turns around and crawls backward to go down a flight of stairs,Physical,13,Crawling,Advanced,Crawling,Locomotor
+138,Reacts to being touched,Physical,1,Developing the senses,Basic,Senses,Senses
+144,Turns towards a touch on the cheek,Physical,1,Developing the senses,Basic,Senses,Senses
+304,Reacts to smells (e.g. sweet vs. bitter smells),Physical,1,Developing the senses,Basic,Senses,Senses
+6,Looks back and forth between two objects,Physical,2,Developing the senses,Intermediate,Senses,Senses
+38,Is startled by loud noises,Physical,2,Developing the senses,Intermediate,Senses,Senses
+93,Prefers soft to coarse sensations,Physical,2,Developing the senses,Intermediate,Senses,Senses
+214,Fixates his/her sight on objects that are 18 inches away,Physical,2,Developing the senses,Intermediate,Senses,Senses
+303,Turns to look at someone who talks to him/her,Physical,2,Developing the senses,Intermediate,Senses,Senses
+145,Turns his/her head toward the direction of a sound,Physical,2,Developing the senses,Intermediate,Senses,Senses
+212,"Reacts differently to different textures (e.g. smooth, gritty, hard)",Physical,7,Developing the senses,Advanced,Senses,Senses
+243,Reacts differently between hot and cold stimuli,Physical,10,Developing the senses,Advanced,Senses,Senses
+41,Brings hands to his/her mouth,Cognitive,2,Early exploration,Basic,Exploration,Cognitive
+281,Follows the movements of objects or people with his/her sight,Cognitive,3,Early exploration,Basic,Exploration,Cognitive
+73,Brings objects to his/her mouth,Cognitive,6,Early exploration,Intermediate,Exploration,Cognitive
+81,Looks at his/her hands,Cognitive,4,Early exploration,Basic,Exploration,Cognitive
+280,Follows people or objects with his/her sight for 180_ (side to side),Cognitive,4,Early exploration,Basic,Exploration,Cognitive
+82,Explores one hand with the other,Cognitive,4,Early exploration,Basic,Exploration,Cognitive
+37,Makes deliberate movements to grab objects that are within reach,Cognitive,4,Early exploration,Basic,Exploration,Cognitive
+40,Explores his/her own body with his/her hands,Cognitive,5,Early exploration,Intermediate,Exploration,Cognitive
+117,Looks around at nearby things from an upright position,Cognitive,5,Early exploration,Intermediate,Exploration,Cognitive
+125,Watches the path of something as it falls,Cognitive,9,Early exploration,Advanced,Exploration,Cognitive
+102,Shows an interest in new things he/she has not seen before,Cognitive,8,Early exploration,Advanced,Exploration,Cognitive
+35,Experiments with cause and effect (e.g. drops an object and expects you to pick it up),Cognitive,7,Early exploration,Advanced,Exploration,Cognitive
+217,Bangs one object with another,Cognitive,6,Early exploration,Intermediate,Exploration,Cognitive
+185,"Solves problems by reaching, pulling, or changing the position of objects",Cognitive,7,Early exploration,Advanced,Exploration,Cognitive
+39,Tests different heights and distances during active play (e.g. while climbing furniture),Cognitive,12,Early exploration,Advanced,Exploration,Cognitive
+146,Opens and closes his/her hands,Physical,2,Early movements and coordination,Basic,Early movements and coordination,Locomotor
+43,Pushes down on his/her legs when his/her feet are placed on a firm surface,Physical,4,Early movements and coordination,Intermediate,Early movements and coordination,Locomotor
+86,Kicks when lying face up,Physical,3,Early movements and coordination,Basic,Early movements and coordination,Locomotor
+159,"Lying face down, extends and moves arms and legs",Physical,3,Early movements and coordination,Basic,Early movements and coordination,Locomotor
+153,Reaches for and grabs objects,Physical,4,Early movements and coordination,Intermediate,Early movements and coordination,Locomotor
+207,Raises his/her legs while lying face up,Physical,4,Early movements and coordination,Intermediate,Early movements and coordination,Locomotor
+215,Flexes and extends one leg and then the other,Physical,4,Early movements and coordination,Intermediate,Early movements and coordination,Locomotor
+294,"Can hold a small object placed in his/her hands, like a rattle",Physical,3,Early movements and coordination,Basic,Early movements and coordination,Locomotor
+1,Opens hand expecting contact when you go to hand him/her something,Cognitive,5,Early movements and coordination,Advanced,Early movements and coordination,Locomotor
+130,"Supports his/her own weight when held up, with his/her feet on a surface",Physical,5,Early movements and coordination,Advanced,Early movements and coordination,Locomotor
+149,Shakes objects,Physical,4,Early movements and coordination,Intermediate,Early movements and coordination,Locomotor
+288,Holds on to large objects with both hands,Physical,6,Early movements and coordination,Advanced,Early movements and coordination,Locomotor
+299,Uses both hands to reach for an object,Physical,5,Early movements and coordination,Advanced,Early movements and coordination,Locomotor
+114,Holds his/her feet with his/her hands when lying face up,Physical,6,Early movements and coordination,Advanced,Early movements and coordination,Locomotor
+165,Switches objects from one hand to the other,Physical,6,Early movements and coordination,Advanced,Early movements and coordination,Locomotor
+133,"Holds two objects, one in each hand",Physical,6,Early movements and coordination,Advanced,Early movements and coordination,Locomotor
+152,Uses fingers and thumb in a raking motion to pick up small objects,Physical,7,Finger Dexterity,Basic,Finger dexterity,Locomotor
+172,Puts objects into a container,Physical,12,Finger Dexterity,Intermediate,Finger dexterity,Locomotor
+235,Takes objects out of a container,Physical,12,Finger Dexterity,Intermediate,Finger dexterity,Locomotor
+251,Picks up objects easily without the use of his/her thumb,Physical,8,Finger Dexterity,Basic,Finger dexterity,Locomotor
+295,Picks up small objects using his/her index finger and thumb (pincer grasp) ,Physical,9,Finger Dexterity,Basic,Finger dexterity,Locomotor
+296,Grasps objects using all of his/her fingers,Physical,10,Finger Dexterity,Intermediate,Finger dexterity,Locomotor
+71,Flips through pages of a book (even if it's not one by one),Physical,11,Finger Dexterity,Intermediate,Finger dexterity,Locomotor
+34,"Inserts objects, like coins in a piggy bank",Physical,12,Finger Dexterity,Intermediate,Finger dexterity,Locomotor
+378,Easily picks up very small objects between his or her thumb and forefinger (pincer grasp),Physical,18,Finger Dexterity,Advanced,Finger dexterity,Locomotor
+409,Completes simple peg or 'insert' puzzles,Physical,18,Finger Dexterity,Advanced,Finger dexterity,Locomotor
+558,Inserts objects like a thread in a narrow orifice or hole,Physical,24,Finger Dexterity,Advanced,Finger dexterity,Locomotor
+7,Tries to imitate words you say,Linguistic,12,First Words,Basic,First words,Language
+249,"Pronounces words with two syllables such as ""mama"" or ""dada""",Linguistic,12,First Words,Basic,First words,Language
+24,Says one or more words with meaning,Linguistic,12,First Words,Basic,First words,Language
+55,Imitates animal sounds,Linguistic,11,First Words,Basic,First words,Language
+353,Repeats words overheard in conversation,Linguistic,24,First Words,Advanced,First words,Language
+395,Places his/her tongue behind his/her teeth as an attempt to pronounce the letter T,Linguistic,17,First Words,Intermediate,First words,Language
+375,Says four or more words with meaning,Linguistic,16,First Words,Intermediate,First words,Language
+391,Pronounces syllables or words with the letter P,Linguistic,18,First Words,Intermediate,First words,Language
+394,Pronounces syllables or words with the letter M,Linguistic,18,First Words,Intermediate,First words,Language
+437,Names famiiar objects when asked to do so ,Linguistic,24,First Words,Advanced,First words,Language
+466,Blows air through his or her mouth (e.g. making bubbles),Linguistic,20,First Words,Advanced,First words,Language
+439,Says ten or more words with meaning,Linguistic,19,First Words,Intermediate,First words,Language
+445,Can name one or two foods,Linguistic,20,First Words,Advanced,First words,Language
+469,Repeats the name of different body parts when they are mentioned,Linguistic,20,First Words,Advanced,First words,Language
+490,Pronounces syllables or words with the letter T,Linguistic,24,First Words,Advanced,First words,Language
+491,Presses his/her lips together as an attempt to pronounce the letter B,Linguistic,17,First Words,Intermediate,First words,Language
+534,"Uses possesive words like ""mine""",Linguistic,21,First Words,Advanced,First words,Language
+587,Pronounces syllables or words with the letter B,Linguistic,18,First Words,Intermediate,First words,Language
+573,Names more than three body parts,Linguistic,24,First Words,Advanced,First words,Language
+373,He/she can say approximately 50 words,Linguistic,24,First Words,Advanced,First words,Language
+156,Wrinkles or tears paper with your help,Physical,7,Hand Coordination,Basic,Hand coordination,Locomotor
+223,Pulls an object towards him/herself (e.g. a toy with a string),Physical,8,Hand Coordination,Basic,Hand coordination,Locomotor
+14,Holds two objects with a single hand,Physical,10,Hand Coordination,Basic,Hand coordination,Locomotor
+298,"Uses both hands simultaneously to handle objects, like opening a box",Physical,10,Hand Coordination,Basic,Hand coordination,Locomotor
+57,Starts and stops a toy's movement (e.g. a ball),Physical,11,Hand Coordination,Basic,Hand coordination,Locomotor
+135,Voluntarily lets go of objects he/she is grabbing,Physical,12,Hand Coordination,Intermediate,Hand coordination,Locomotor
+139,Uses the handle to open and close a door or drawer,Physical,11,Hand Coordination,Basic,Hand coordination,Locomotor
+140,Uses an object as a tool to pull or push another object,Physical,11,Hand Coordination,Basic,Hand coordination,Locomotor
+47,Turns hands to open and close lids on containers,Physical,12,Hand Coordination,Intermediate,Hand coordination,Locomotor
+179,Builds towers of two or more blocks,Physical,12,Hand Coordination,Intermediate,Hand coordination,Locomotor
+362,Wrinkles paper using both hands,Physical,13,Hand Coordination,Intermediate,Hand coordination,Locomotor
+312,Flattens and presses playdough between his or her hands,Physical,16,Hand Coordination,Intermediate,Hand coordination,Locomotor
+314,Builds towers with four or more blocks,Physical,15,Hand Coordination,Intermediate,Hand coordination,Locomotor
+484,No longer drops objects unintentionally,Physical,17,Hand Coordination,Intermediate,Hand coordination,Locomotor
+407,Builds towers with five or six blocks ,Physical,24,Hand Coordination,Advanced,Hand coordination,Locomotor
+414,"Makes small paper or playdough balls, rolling them between his/her hands",Physical,18,Hand Coordination,Advanced,Hand coordination,Locomotor
+463,Pastes materials on a sheet of paper,Physical,18,Hand Coordination,Advanced,Hand coordination,Locomotor
+467,Tears paper using both hands,Physical,18,Hand Coordination,Advanced,Hand coordination,Locomotor
+408,Knocks down block towers ,Physical,16,Hand Coordination,Intermediate,Hand coordination,Locomotor
+532,Makes shapes from playdough,Physical,24,Hand Coordination,Advanced,Hand coordination,Locomotor
+536,"With help, rolls playdough to make strips, rolling it in his/her hands or on the table",Physical,24,Hand Coordination,Advanced,Hand coordination,Locomotor
+310,"Moves toys with wheels (cars, trains, etc.)",Physical,14,Hand Coordination,Intermediate,Hand coordination,Locomotor
+357,"Passes small objects from one container to another, using his/her hands",Physical,14,Hand Coordination,Intermediate,Hand coordination,Locomotor
+216,Turns his/her head to both sides when lying face up,Physical,2,Head control,Basic,Head control,Locomotor
+220,Lifts his/her head for a few seconds when lying face down,Physical,2,Head control,Basic,Head control,Locomotor
+75,Keeps his/her head held up while lying face down,Physical,2,Head control,Basic,Head control,Locomotor
+91,"When upright, he/she can turn his/her head left and right",Physical,3,Head control,Intermediate,Head control,Locomotor
+115,"Lifts his/her head and chest while lying face down, resting on his/her elbows and forearms",Physical,4,Head control,Advanced,Head control,Locomotor
+132,"Holds his/her head steady, but needs support when carried upright and moved around",Physical,2,Head control,Basic,Head control,Locomotor
+30,Supports his/her head completely,Physical,4,Head control,Advanced,Head control,Locomotor
+189,Imitates another person's movements,Cognitive,4,Imitating,Basic,Imitation,Cognitive
+218,Imitates another person's facial expressions,Cognitive,4,Imitating,Basic,Imitation,Cognitive
+53,Copies gestures ,Cognitive,12,Imitating,Intermediate,Imitation,Cognitive
+5,Modifies his/her behavior by following an example while playing,Cognitive,10,Imitating,Intermediate,Imitation,Cognitive
+335,"Moves a body part when he/she is asked to do so, following visual cues",Cognitive,15,Imitating,Intermediate,Imitation,Cognitive
+363,Moves his/her hands up and down when prompted,Cognitive,15,Imitating,Intermediate,Imitation,Cognitive
+347,Imitates facial expressions when you ask him/her to do so,Cognitive,15,Imitating,Intermediate,Imitation,Cognitive
+346,Imitates different animal sounds when prompted ,Cognitive,15,Imitating,Intermediate,Imitation,Cognitive
+406,Uses an object properly after observing how an adult does so,Cognitive,17,Imitating,Advanced,Imitation,Cognitive
+443,"Moves his/her arms left and right or in circles, following your lead",Cognitive,18,Imitating,Advanced,Imitation,Cognitive
+452,"Imitates the sound of objects he/she finds in images (e.g. car, phone)",Cognitive,18,Imitating,Advanced,Imitation,Cognitive
+551,"Copies others, especially adults and older children¾",Cognitive,24,Imitating,Advanced,Imitation,Cognitive
+27,Turns towards known objects or people when they are named,Linguistic,9,Language comprehension,Basic,Language comprehension,Language
+67,"Responds appropriately to ""yes"" and ""no""",Linguistic,9,Language comprehension,Basic,Language comprehension,Language
+279,Points to familiar objects when you mention their name,Linguistic,12,Language comprehension,Intermediate,Language comprehension,Language
+258,Gives you an object if you ask for it,Linguistic,12,Language comprehension,Intermediate,Language comprehension,Language
+32,Knows the names for at least a few objects,Linguistic,12,Language comprehension,Intermediate,Language comprehension,Language
+109,"Responds to three words such as ""look, the dog"" ",Linguistic,12,Language comprehension,Intermediate,Language comprehension,Language
+333,Listens closely when he/she is spoken to,Linguistic,13,Language comprehension,Intermediate,Language comprehension,Language
+360,"Points to ""Mom"" and ""Dad""",Linguistic,13,Language comprehension,Intermediate,Language comprehension,Language
+307,Points to one or more body parts when asked to do so,Linguistic,18,Language comprehension,Advanced,Language comprehension,Language
+366,"Points to an image of an animal when you make its sound (e.g. points to a dog when you say ""woof"")",Linguistic,15,Language comprehension,Intermediate,Language comprehension,Language
+368,"Responds to simple questions (e.g. ""Do you want a drink?"")",Linguistic,18,Language comprehension,Advanced,Language comprehension,Language
+444,Answers when asked if he/she wants to eat,Linguistic,16,Language comprehension,Intermediate,Language comprehension,Language
+505,Understands approximately 100 to 300 words,Linguistic,24,Language comprehension,Advanced,Language comprehension,Language
+483,"Points to or names places he/she sees in images (e.g. park, home, market)",Linguistic,24,Language production,Advanced,Language production,Language
+419,Combines words to form short phrases,Linguistic,20,Language production,Intermediate,Language production,Language
+465,Asks for a few things by their name,Linguistic,20,Language production,Intermediate,Language production,Language
+572,"Names objects after hearing their sounds (e.g. says ""phone"" when the phone rings)",Linguistic,24,Language production,Advanced,Language production,Language
+508,Says a few words about an image when prompted,Linguistic,24,Language production,Advanced,Language production,Language
+527,"Describes characteristics of objects, animals, or people (e.g. ""the purple ball"")",Linguistic,24,Language production,Advanced,Language production,Language
+540,"Uses one word to express a whole thought (e.g. ""park"" for ""take me to the park"")",Linguistic,20,Language production,Intermediate,Language production,Language
+544,Makes simple statements about recent events,Linguistic,24,Language production,Advanced,Language production,Language
+564,Answers simple questions about an image,Linguistic,24,Language production,Advanced,Language production,Language
+566,Answers simple questions about a story,Linguistic,24,Language production,Advanced,Language production,Language
+429,Can identify a circle in an image or object,Cognitive,20,Learning about shapes and colors,Basic,Early knowledge,Cognitive
+431,Can identify a square in an image or object,Cognitive,20,Learning about shapes and colors,Basic,Early knowledge,Cognitive
+396,Points to something green when asked to do so,Cognitive,24,Learning about shapes and colors,Advanced,Early knowledge,Cognitive
+397,Points to something blue when asked to do so,Cognitive,24,Learning about shapes and colors,Advanced,Early knowledge,Cognitive
+398,Points to something red when asked to do so,Cognitive,24,Learning about shapes and colors,Advanced,Early knowledge,Cognitive
+399,Points to something yellow when asked to do so,Cognitive,24,Learning about shapes and colors,Advanced,Early knowledge,Cognitive
+430,Can identify a triangle in an image or object,Cognitive,20,Learning about shapes and colors,Basic,Early knowledge,Cognitive
+433,Looks for and finds objects with a specific color,Cognitive,24,Learning about shapes and colors,Advanced,Early knowledge,Cognitive
+502,"Can sort objects by size (e.g. ""find all of the little blocks"")",Cognitive,24,Learning about shapes and colors,Advanced,Abstract reasoning,Cognitive
+503,"Can sort objects by shape (e.g. ""find all of the triangle blocks"")",Cognitive,24,Learning about shapes and colors,Advanced,Abstract reasoning,Cognitive
+521,Can sort objects by color,Cognitive,24,Learning about shapes and colors,Advanced,Abstract reasoning,Cognitive
+427,"Names the circle, triangle, or square",Cognitive,24,Learning about shapes and colors,Advanced,Language production,Cognitive
+28,Voluntarily directs his/her attention towards a person or situation,Cognitive,3,Memory and Attention,Basic,Memory and attention,Cognitive
+89,Can pay attention to an object or person for at least one minute,Cognitive,6,Memory and Attention,Basic,Memory and attention,Cognitive
+188,Directs his/her attention to his/her surroundings,Cognitive,4,Memory and Attention,Basic,Memory and attention,Cognitive
+63,Closely observes how you do things,Cognitive,8,Memory and Attention,Intermediate,Memory and attention,Cognitive
+90,Pays attention to conversations,Cognitive,9,Memory and Attention,Intermediate,Memory and attention,Cognitive
+157,Associates objects with their corresponding sounds (e.g. looks for the phone when it starts to ring),Cognitive,10,Memory and Attention,Intermediate,Memory and attention,Cognitive
+19,"Follows simple, one-step instructions (e.g. ""pick up the toy"")",Cognitive,12,Memory and Attention,Intermediate,Memory and attention,Cognitive
+436,Can pay attention to a book for a few minutes at a time,Cognitive,15,Memory and Attention,Intermediate,Memory and attention,Cognitive
+472,Has a sense of location in familiar places,Cognitive,18,Memory and Attention,Advanced,Memory and attention,Cognitive
+435,Knows names of familiar people,Cognitive,24,Memory and Attention,Advanced,Memory and attention,Cognitive
+478,Points at or names objects or characters in a story,Cognitive,19,Memory and Attention,Advanced,Memory and attention,Cognitive
+421,"Follows two-step instructions (e.g. ""find your doll and bring it to me"")",Cognitive,24,Memory and Attention,Advanced,Memory and attention,Cognitive
+524,Finishes sentences from books he/she knows very well,Cognitive,24,Memory and Attention,Advanced,Memory and attention,Cognitive
+255,Responds to music by attempting to move to the rhythm,Cognitive,8,Musical Skills,Basic,Rhythm,Cognitive
+315,Tries to sing along when he/she hears familiar songs,Cognitive,13,Musical Skills,Intermediate,Rhythm,Cognitive
+338,"Follows the rhythm of a song clapping his/her hands, or with instruments",Cognitive,15,Musical Skills,Intermediate,Rhythm,Cognitive
+352,Identifies different toy musical instruments by naming or pointing at them,Cognitive,20,Musical Skills,Advanced,Early knowledge,Cognitive
+417,Dances along to the rhythm of a song,Cognitive,15,Musical Skills,Intermediate,Rhythm,Cognitive
+468,"Recognizes the sound of different musical instruments (e.g. drum, guitar)",Cognitive,24,Musical Skills,Advanced,Rhythm,Cognitive
+537,Knows and sings the words to a song,Cognitive,24,Musical Skills,Advanced,Memory and attention,Cognitive
+376,Plays with different toy musical instruments,Cognitive,14,Musical Skills,Intermediate,Rhythm,Cognitive
+201,Keeps hands clenched in tight fists,Physical,1,Newborn Reflexes and Posture,Basic,Newborn reflexes and posture,Locomotor
+202,"Flexes and lifts legs to the sides, while on his/her back",Physical,1,Newborn Reflexes and Posture,Basic,Newborn reflexes and posture,Locomotor
+150,"When startled, throws arms in the air with the palms of his/her hands facing up, stretches back and neck and quickly retracts arms back to chest (Moro reflex)",Physical,1,Newborn Reflexes and Posture,Basic,Newborn reflexes and posture,Locomotor
+193,Stretches and spreads his/her toes when the sole of his/her foot is stroked (Babinski reflex),Physical,1,Newborn Reflexes and Posture,Basic,Newborn reflexes and posture,Locomotor
+236,Automatically begins to suck when the roof of his/her mouth is touched (sucking reflex),Physical,1,Newborn Reflexes and Posture,Basic,Newborn reflexes and posture,Locomotor
+289,Opens his/her mouth and turns toward your hand when you stroke his/her cheek (rooting reflex),Physical,1,Newborn Reflexes and Posture,Basic,Newborn reflexes and posture,Locomotor
+21,Stays in a flexed position with arms and legs tucked into his/her body,Physical,1,Newborn Reflexes and Posture,Basic,Newborn reflexes and posture,Locomotor
+131,Makes a fist around a small object or finger placed in his/her hand (grasping reflex),Physical,2,Newborn Reflexes and Posture,Intermediate,Newborn reflexes and posture,Locomotor
+136,"Lying face up, rests with his/her legs stretched out at hips",Physical,3,Newborn Reflexes and Posture,Advanced,Newborn reflexes and posture,Locomotor
+168,Kicks a ball while walking if held by the hands,Physical,12,Physical coordination,Basic,Walking,Locomotor
+182,Coordinates movements by alternating his/her feet to walk on narrow surfaces,Physical,12,Physical coordination,Basic,Walking,Locomotor
+355,Pushes or pulls toys while walking,Physical,18,Physical coordination,Intermediate,Walking,Locomotor
+456,Throws a ball overhand,Physical,24,Physical coordination,Advanced,Physical coordination,Locomotor
+458,Catches a rolled ball with his/her hands or body,Physical,20,Physical coordination,Intermediate,Physical coordination,Locomotor
+528,Kicks a ball,Physical,24,Physical coordination,Advanced,Physical coordination,Locomotor
+530,Tries to bounce a ball,Physical,22,Physical coordination,Intermediate,Physical coordination,Locomotor
+529,Attempts to catch a thrown ball by extending arms directly in front of body,Physical,24,Physical coordination,Advanced,Physical coordination,Locomotor
+78,Protests when his/her activities are interrupted,Linguistic,8,Self-awareness and Independence,Basic,Independence,Cognitive
+103,Uses a few things correctly (e.g. sippy cup is for drinking),Social and Emotional,12,Self-awareness and Independence,Basic,Early knowledge,Cognitive
+241,Participates in daily activities like putting away his/her toys,Social and Emotional,11,Self-awareness and Independence,Basic,Independence,Cognitive
+110,"Responds to his/her name by turning, crawling or walking towards you",Social and Emotional,12,Self-awareness and Independence,Basic,Self-awareness,Cognitive
+85,Extends arm or leg to help when being dressed,Social and Emotional,12,Self-awareness and Independence,Basic,Independence,Cognitive
+120,Recognizes him/herself in a mirror,Social and Emotional,18,Self-awareness and Independence,Intermediate,Self-awareness,Cognitive
+306,Can eat with a spoon,Social and Emotional,18,Self-awareness and Independence,Intermediate,Independence,Cognitive
+461,"Shows first signs of independence by exploring alone, but with a parent close by",Social and Emotional,18,Self-awareness and Independence,Intermediate,Independence,Cognitive
+476,Can eat without help,Social and Emotional,18,Self-awareness and Independence,Intermediate,Independence,Cognitive
+411,"Helps undress him/herself, for example, by pulling on pants",Social and Emotional,18,Self-awareness and Independence,Intermediate,Independence,Cognitive
+577,Shows a preference for certain foods,Social and Emotional,22,Self-awareness and Independence,Advanced,Independence,Cognitive
+565,Knows how to use personal hygiene objects (e.g. toothbrush),Social and Emotional,23,Self-awareness and Independence,Advanced,Early knowledge,Cognitive
+509,Identifies a boy and a girl in an image,Social and Emotional,24,Self-awareness and Independence,Advanced,Early knowledge,Cognitive
+525,Picks out the correct clothes at bedtime (sleepwear),Social and Emotional,24,Self-awareness and Independence,Advanced,Self-awareness,Cognitive
+285,Smiles reflexively (e.g. while sleeping),Social and Emotional,1,Socializing,Basic,Social and emotional development,Social_Emotional
+240,Pays special attention to faces,Social and Emotional,1,Socializing,Basic,Social and emotional development,Social_Emotional
+26,Stares at someone who is speaking to him/her,Social and Emotional,4,Socializing,Basic,Social and emotional development,Social_Emotional
+112,Laughs,Social and Emotional,6,Socializing,Intermediate,Social and emotional development,Social_Emotional
+95,Shows interest when he/she sees his/her reflection in the mirror,Social and Emotional,6,Socializing,Intermediate,Social and emotional development,Social_Emotional
+51,Distinguishes emotions by tone of voice,Social and Emotional,7,Socializing,Intermediate,Social and emotional development,Social_Emotional
+108,Repeats sounds or actions that get people's attention,Social and Emotional,12,Socializing,Intermediate,Social and emotional development,Social_Emotional
+340,Points to things he/she wants you to look at,Social and Emotional,13,Socializing,Intermediate,Social and emotional development,Social_Emotional
+451,"Identifies the feelings of characters or people in images (e.g. ""sad"")",Social and Emotional,24,Socializing,Advanced,Social and emotional development,Social_Emotional
+552,Begins a conversation with others,Social and Emotional,23,Socializing,Advanced,Social and emotional development,Social_Emotional
+225,Likes to play with others,Social and Emotional,6,Stages of play,Basic,Play,Cognitive
+84,Voluntarily offers his/her own toys while playing with other kids,Social and Emotional,12,Stages of play,Intermediate,Play,Cognitive
+344,Has a favorite toy,Social and Emotional,13,Stages of play,Intermediate,Play,Cognitive
+329,Plays simple pretend (e.g. feeding a doll),Social and Emotional,18,Stages of play,Advanced,Play,Cognitive
+349,Plays alone,Social and Emotional,15,Stages of play,Intermediate,Play,Cognitive
+354,Likes to play with adults,Social and Emotional,15,Stages of play,Intermediate,Play,Cognitive
+454,Interacts with other kids by playing beside them,Social and Emotional,24,Stages of play,Advanced,Play,Cognitive
+464,Portrays family members while playing,Social and Emotional,20,Stages of play,Advanced,Play,Cognitive
+475,Starts playing make-believe (e.g. dressing up or acting like a fireman),Social and Emotional,24,Stages of play,Advanced,Play,Cognitive
+113,"Pulls him/herself up to standing, holding on to furniture",Physical,9,Standing up,Basic,Standing,Locomotor
+209,Goes from sitting to kneeling,Physical,9,Standing up,Basic,Standing,Locomotor
+245,Remains standing while holding on to something,Physical,9,Standing up,Basic,Standing,Locomotor
+297,"When crawling, stops and lays a foot on the floor to practice standing up",Physical,10,Standing up,Basic,Standing,Locomotor
+208,Goes from standing to sitting without your help,Physical,12,Standing up,Intermediate,Standing,Locomotor
+274,Stands up by him/herself,Physical,11,Standing up,Intermediate,Standing,Locomotor
+271,Stands momentarily without support,Physical,12,Standing up,Intermediate,Standing,Locomotor
+350,Stays balanced when standing,Physical,13,Standing up,Intermediate,Standing,Locomotor
+325,Is able to squat down,Physical,15,Standing up,Advanced,Standing,Locomotor
+459,Stays balanced while carrying out activities standing up,Physical,17,Standing up,Advanced,Standing,Locomotor
+438,Goes from sitting to standing without support,Physical,18,Standing up,Advanced,Standing,Locomotor
+470,Goes from squatting down to standing up,Physical,18,Standing up,Advanced,Standing,Locomotor
+227,Stays seated leaning on pillows or furniture,Physical,4,Turning and Sitting,Basic,Turning and sitting,Locomotor
+11,"Lying face up, stretches his/her back, extending the backbone",Physical,5,Turning and Sitting,Basic,Turning and sitting,Locomotor
+33,"While lying face up, attempts to sit up when pulled by the hands",Physical,5,Turning and Sitting,Basic,Turning and sitting,Locomotor
+162,"While lying face up, raises his/her head, attempting to sit up",Physical,5,Turning and Sitting,Basic,Turning and sitting,Locomotor
+92,Rolls over both ways (face up to face down and face down to face up),Physical,7,Turning and Sitting,Advanced,Turning and sitting,Locomotor
+121,"Remains sitting with your help, maintaining his/her torso firm",Physical,6,Turning and Sitting,Intermediate,Turning and sitting,Locomotor
+151,"While lying face down, rolls to face up position",Physical,5,Turning and Sitting,Basic,Turning and sitting,Locomotor
+160,"Lying face-down, rocks side to side on stomach",Physical,5,Turning and Sitting,Basic,Turning and sitting,Locomotor
+118,Remains sitting without support,Physical,9,Turning and Sitting,Advanced,Turning and sitting,Locomotor
+270,Goes from laying down to sitting by him/herself,Physical,9,Turning and Sitting,Advanced,Turning and sitting,Locomotor
+272,Remains seated with support of his/her hands placed in front of his/her body (tripod),Physical,6,Turning and Sitting,Intermediate,Turning and sitting,Locomotor
+15,"Walks by ""cruising"" or leaning on furniture",Physical,12,Walking,Basic,Walking,Locomotor
+124,Walks while holding on to someone with both hands,Physical,10,Walking,Basic,Walking,Locomotor
+184,Takes steps forward with little help,Physical,12,Walking,Basic,Walking,Locomotor
+4,"While walking, stops to squat down to grab an object",Physical,12,Walking,Basic,Walking,Locomotor
+16,Can take a few steps without support,Physical,12,Walking,Basic,Walking,Locomotor
+309,Can carry an object while walking,Physical,18,Walking,Intermediate,Walking,Locomotor
+324,Toddles around; legs wide apart and moving forward from side to side,Physical,13,Walking,Basic,Walking,Locomotor
+382,"Walks up stairs with your help, alternating his/her feet",Physical,18,Walking,Intermediate,Walking,Locomotor
+415,Walks alone,Physical,18,Walking,Intermediate,Walking,Locomotor
+416,Stays balanced when walking,Physical,18,Walking,Intermediate,Walking,Locomotor
+457,Goes to get objects after tossing them,Physical,18,Walking,Intermediate,Walking,Locomotor
+471,"Walks down stairs with your help, alternating his/her feet",Physical,18,Walking,Intermediate,Walking,Locomotor
+538,Walks up ramps,Physical,21,Walking,Advanced,Walking,Locomotor
+330,"Scribbles randomly, making large shoulder movements",Physical,15,Writing and Coloring,Basic,Hand coordination,Locomotor
+377,Holds a crayon with his/her whole fist,Physical,15,Writing and Coloring,Basic,Hand coordination,Locomotor
+442,Paints using a paintbrush,Physical,18,Writing and Coloring,Intermediate,Hand coordination,Locomotor
+481,Scribbles moving his/her hand left and right,Physical,18,Writing and Coloring,Intermediate,Hand coordination,Locomotor
+516,Starts to make horizontal strokes while drawing or painting ,Physical,24,Writing and Coloring,Advanced,Hand coordination,Locomotor
+518,Starts to make vertical strokes while drawing or painting ,Physical,24,Writing and Coloring,Advanced,Hand coordination,Locomotor
+519,Starts to make circular strokes while drawing or painting ,Physical,24,Writing and Coloring,Advanced,Hand coordination,Locomotor
+559,Traces lines drawn on a paper with his/her finger,Physical,24,Writing and Coloring,Advanced,Hand coordination,Locomotor
+562,Uses crayons or brushes to trace lines drawn on a paper,Physical,24,Writing and Coloring,Advanced,Hand coordination,Locomotor
